@@ -1,6 +1,6 @@
 from pysimplesoap.client import SoapClient
 from xml.etree import ElementTree as ET
-from datetime import datetime, date, timedelta
+from datetime import datetime
 
 
 class OcaService(object):
@@ -132,7 +132,7 @@ class OcaService(object):
         )
 
     def tarifarEnvioCorporativo(self, peso_total, volumen_total, cp_origen,
-                                cp_destino, n_paquetes, cuit, operativa):
+                                cp_destino, n_paquetes, operativa):
         return OcaService.iterateresult(
             'Tarifar_Envio_CorporativoResult',
             self.client.Tarifar_Envio_Corporativo(
@@ -141,7 +141,7 @@ class OcaService(object):
                 CodigoPostalOrigen=cp_origen,
                 CodigoPostalDestino=cp_destino,
                 CantidadPaquetes=n_paquetes,
-                CUIT=cuit,
+                Cuit=self.CUIT,
                 Operativa=operativa
             )
         )
