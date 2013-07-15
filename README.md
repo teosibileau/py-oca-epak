@@ -15,7 +15,7 @@ pip install -e git+https://github.com/drkloc/py-oca-epak.git#egg=ocaepak
 from ocaepak.client import OcaService
 # Initialize with your user, password and cuit
 (user, password, cuit) = ('your_user', 'your_password', 'your_cuit')
-oca = OcaService(user,password, cuit)
+oca = OcaService(user, password, cuit)
 ```
 
 ### AnularOrdenGenerada
@@ -61,7 +61,7 @@ which outputs a dict containing the following:
 Initialize and:
 
 ```python
-oca.centrosDeImposicion(orden)
+oca.centrosDeImposicion()
 ```
 
 ### GetCentrosImposicionPorCP
