@@ -70,7 +70,7 @@ Initialize and:
 
 ```python
 cp = 8430
-oca.centrosDeImposicion(cp)
+oca.centrosDeImposicionPorCP(cp)
 ```
 
 ### IngresoOR
