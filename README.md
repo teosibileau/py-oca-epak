@@ -1,6 +1,6 @@
 # Oca e-Pak python wrapper
 
-This is a **FIRST DRAFT** of a python wrapper to the SOAP services ([http://webservice.oca.com.ar/oep_tracking/](http://webservice.oca.com.ar/oep_tracking/)) provided by OCA Argentina to integrate their e-Pak services within your platform.
+This is the **FIRST DRAFT** of a python wrapper to the SOAP services ([http://webservice.oca.com.ar/oep_tracking/](http://webservice.oca.com.ar/oep_tracking/)) provided by OCA Argentina to integrate their e-Pak services within your platform.
 
 
 ## Installation
