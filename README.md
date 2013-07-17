@@ -36,7 +36,7 @@ operativa = 72771
 oca.centroCostoPorOperativa(operativa)
 ```
 
-You can check the list of availables 'operatives' with:
+You can check the list of availables 'operativas' with:
 
 ```python
 print OcaService.OPERATIVAS
@@ -83,30 +83,63 @@ dias_retiro = 4 # delta of days to retired the package
 franja_horaria = 1 # 1:8-17 2:8-12 3:14-17
 confirmar_retiro = False # Direct confirmation or Manual Confirmation
 oca.centrosDeImposicion(
-	xml_retiro,
+	compra,
 	dias_retiro,
 	franja_horaria,
 	confirmar_retiro
 )
 ```
 
-xml_retiro should resemble the following:
+compra should resemble the following:
 
-```xml
-<?xml version="1.0"?>
-	<ROWS>
-		<cabecera ver="1.0" nrocuenta="numero cuenta OCA"/>
-		<retiro calle="Calle retiro" nro="numero retiro" piso="piso retiro" depto="departamento retiro" cp="codigo postal retiro" localidad="localidad retiro" provincia="provincia retiro" contacto="contacto retiro" email="e-mail del contacto retiro" solicitante="solicitante retiro" observaciones="observaciones retiro" centrocosto="centro costo retiro"/>
-	<envios>
-		<envio idoperativa="idoperativa" nroremito="numero remito" >
-			<destinatario apellido="Apellido destinatario" nombre="Nombre destinatario" calle="Calle destinatario" nro="Numero destinatario" piso="Piso destinatario" depto="Depto destinatario" cp="codigo postal destinatario" localidad="localidad destinatario" provincia="provincia destinatario" telefono="telefono destinatario" email="email destinatario" idci="IdCentroImposicion" celular="celular destinatario"/>
-			<paquetes>
-				<paquete alto="10" ancho="11" largo="12" peso="15" valor="200" cant="1" />
-				<paquete alto="11" ancho="20" largo="20" peso="30" valor="300" cant="2" />
-			</paquetes>
-		</envio>
-	</envios>
-</ROWS>
+```python
+compra = {
+    'numero_cuenta': '142357/000',
+    'retiro': {
+	    'calle': '11 de Septiembre',
+	    'numero': 3123,
+	    'piso': '-',
+	    'departamento': '-',
+	    'cp': 1426,
+	    'localidad': 'Capital Federal',
+	    'provincia': '-',
+	    'contacto': 'Martina Pi',
+	    'solicitante': 'Martina Pi',
+	    'email': 'martina@pi.com',
+	    'observaciones': 'Observaciones',
+	    'centro_de_costo': 0 # 0 for PaP 1 for PaS
+	},
+    'envios': [
+        {
+            'id_operativa': 72771,
+            'numero_remito': 36300008254,
+            'destinatario': {
+                'apellido': 'Sib',
+                'nombre': 'Thor',
+                'calle': 'Avenida Perito Martino',
+                'numero': 131,
+                'piso': '-',
+                'departamento': '-',
+                'cp': 8231,
+                'localidad': 'Bariloche',
+                'provincia': 'Rio Negro',
+                'telefono': '-',
+                'email': '-',
+                'celular': '-'
+            },
+            'paquetes': [
+                {
+                    'alto': 1,
+                    'ancho': 1,
+                    'largo': 1,
+                    'peso': 1,
+                    'valor_declarado': 100,
+                    'cantidad': 1,
+                }
+            ]
+        },
+    ]
+}
 ```
 
 ### List_Envios

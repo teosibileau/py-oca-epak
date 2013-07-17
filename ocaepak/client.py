@@ -1,6 +1,13 @@
 from pysimplesoap.client import SoapClient
 from xml.etree import ElementTree as ET
+
 from datetime import datetime
+
+
+import os
+from jinja2 import Template
+
+ROOT = os.path.dirname(os.path.realpath(__file__))
 
 
 class OcaService(object):
@@ -27,6 +34,12 @@ class OcaService(object):
         72952: 'PAP STD C/SEG y PAGO EN Destino',
         72953: 'PAP PRIO C/SEG y Pago en Destino',
         72952: 'PAS Prio c/seg y pago en Destino'
+    }
+
+    FRANJAS_HORARIAS = {
+        1: '8 a 17hs',
+        2: '8 a 12hs',
+        3: '14 a 17hs',
     }
 
     @classmethod
@@ -60,7 +73,9 @@ class OcaService(object):
         self.CUIT = cuit
         self.client = SoapClient(
             wsdl=OcaService.OCA_WDSL,
-            location=OcaService.WSDL_BASE_URI
+            location=OcaService.WSDL_BASE_URI,
+            exceptions=True,
+            trace=True
         )
 
     def anularOrdenGenerada(self, orden):
@@ -96,19 +111,22 @@ class OcaService(object):
             )
         )
 
-    def ingresarOR(self, xml_retiro, dias_retiro, franja_horaria,
+    def ingresarOR(self, compra, dias_retiro, franja_horaria,
                    confirmar_retiro=False):
-        return OcaService.iterateresult(
-            'IngresoORResult',
-            self.client.IngresoOR(
-                Usr=self.user,
-                Psw=self.password,
-                XML_Retiro=xml_retiro,
-                ConfirmarRetiro=confirmar_retiro,
-                DiasRetiro=dias_retiro,
-                FranjaHoraria=franja_horaria
-            )
+        t_file = open(os.path.join(ROOT, 'templates', 'retiro.xml'))
+        template = [l for l in t_file.readlines()]
+        template = Template(''.join(template))
+        template_render = template.render(compra).replace('\t', '').replace('\n', '')
+        print template_render
+        r = self.client.IngresoOR(
+            usr=self.user,
+            psw=self.password,
+            XML_Retiro=template_render,
+            ConfirmarRetiro='true' if confirmar_retiro else 'false',
+            DiasRetiro=dias_retiro,
+            FranjaHoraria=franja_horaria
         )
+        return r
 
     def estadoUltimosEnvios(self, operativas, from_date, to_date):
         return OcaService.iterateresult(

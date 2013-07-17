@@ -1,0 +1,16 @@
+<ROWS>
+	<cabecera ver='1.0' nrocuenta='{{numero_cuenta}}' />
+	<retiro calle='{{retiro.calle}}' nro='{{retiro.numero}}' piso='{{retiro.piso}}' depto='{{retiro.departamento}}' cp='{{retiro.cp}}' localidad='{{retiro.localidad}}' provincia='{{retiro.provincia}}' contacto='{{retiro.solicitante}}' email='{{retiro.email}}' solicitante='{{retiro.solicitante}}' observaciones='{{retiro.observaciones}}' centrocosto='{{retiro.centro_de_costo}}' />
+	<envios>
+		{% for envio in envios %}
+		<envio idoperativa='{{envio.id_operativa}}' nroremito='{{envio.numero_remito}}'>
+			<destinatario apellido='{{envio.destinatario.apellido}}' nombre='{{envio.destinatario.nombre}}' calle='{{envio.destinatario.calle}}' nro='{{envio.destinatario.numero}}' piso='{{envio.destinatario.piso}}' depto='{{envio.destinatario.departamento}}' cp='{{envio.destinatario.cp}}' localidad='{{envio.destinatario.localidad}}' provincia='{{envio.destinatario.provincia}}' telefono='{{envio.destinatario.telefono}}' email='{{envio.destinatario.email}}' {% if envio.destinatario.centro_de_costo %}idci='{{envio.destinatario.centro_de_costo}}'{% endif %} celular='{{envio.destinatario.celular}}'/>
+			<paquetes>
+				{% for paquete in envio.paquetes %}
+				<paquete alto='{{paquete.alto}}' ancho='{{paquete.ancho}}' largo='{{paquete.largo}}' peso='{{paquete.peso}}' valor='{{paquete.valor_declarado}}' cant='{{paquete.cantidad}}'/>
+				{% endfor %}
+			</paquetes>
+		</envio>
+		{% endfor %}
+	</envios>
+</ROWS>
