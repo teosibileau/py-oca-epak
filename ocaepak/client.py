@@ -16,24 +16,32 @@ class OcaService(object):
     LABELS_FOR_INTEGERS = [
         'Numero',
         'Piso',
-        'idCentroImposicion'
+        'idCentroImposicion',
+        'idTipoSercicio',
+        'PlazoEntrega',
+        'Tarifador'
+    ]
+    LABELS_FOR_FLOATS = [
+        'Precio',
+        'Adicional',
+        'Total'
     ]
     LABELS_FOR_DATETIMES = [
         'fecha'
     ]
 
     OPERATIVAS = {
-        72767: 'Punto a Punto STD C/A P. en destino y SEGURO',
-        72768: 'Punto a Sucursal STD C/ P. en destino y SEGURO',
-        72769: 'PaP PRIOR C/P. en destino y SEGURO',
-        72770: 'PaS PRIO C/P. en destino y SEGURO',
-        72771: 'PaP STD C/P. en destino',
-        72772: 'PaS STD C/P. en destino',
-        72951: 'PAP STD C/SEG y PAGO E/Destino',
-        72952: 'PAS STD C/SEG y Pago E/Destino',
-        72952: 'PAP STD C/SEG y PAGO EN Destino',
-        72953: 'PAP PRIO C/SEG y Pago en Destino',
-        72952: 'PAS Prio c/seg y pago en Destino'
+        72767: 'Punto a Punto Estandar con Seguro / Pago en Destino',
+        72768: 'Punto a Sucursal Estandar con Seguro / Pago en Destino',
+        72769: 'Punto a Punto Prioritario con Seguro / Pago en Destino',
+        72770: 'Punto a Sucursal Prioritario con Seguro / Pago en Destino',
+        72771: 'Punto a Punto Estandar / Pago en Destino',
+        72772: 'Punto a Sucursal Estandar / Pago en Destino',
+        72951: 'Punto a Punto Estandar con Seguro / Pago en Destino',
+        72952: 'Punto a Sucursal Estandar con Seguro / Pago en Destino',
+        72952: 'Punto a Punto Estandar con Seguro / Pago en Destino',
+        72953: 'Punto a Punto Prioritario con Seguro / Pago en Destino',
+        72952: 'Punto a Sucursal Prioritario con Seguro / Pago en Destino'
     }
 
     FRANJAS_HORARIAS = {
@@ -58,16 +66,20 @@ class OcaService(object):
                     if value:
                         if field.tag in OcaService.LABELS_FOR_INTEGERS:
                             value = int(value)
-                        if field.tag in OcaService.LABELS_FOR_DATETIMES:
+                        elif field.tag in OcaService.LABELS_FOR_FLOATS:
+                            value = float(value)
+                        elif field.tag in OcaService.LABELS_FOR_DATETIMES:
                             value = datetime.strptime(
                                 value,
                                 '%Y-%m-%dT%H:%M:%S-03:00'
                             )
+                        else:
+                            value = value.encode('utf-8')
                         t[field.tag] = value
             r.append(t)
         return r
 
-    def __init__(self, user, password, cuit):
+    def __init__(self, user, password, cuit, trace=False):
         self.user = user
         self.password = password
         self.CUIT = cuit
@@ -75,7 +87,7 @@ class OcaService(object):
             wsdl=OcaService.OCA_WDSL,
             location=OcaService.WSDL_BASE_URI,
             exceptions=True,
-            trace=True
+            trace=trace,
         )
 
     def anularOrdenGenerada(self, orden):
