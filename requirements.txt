@@ -1,2 +1,0 @@
-PySimpleSOAP==1.05a
-Jinja2==2.7
