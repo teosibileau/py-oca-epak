@@ -1,6 +1,6 @@
-# Oca e-Pak python wrapper
+# Oca e-Pak Python wrapper
 
-This is the **FIRST DRAFT** of a python wrapper to the SOAP services ([http://webservice.oca.com.ar/oep_tracking/](http://webservice.oca.com.ar/oep_tracking/)) provided by OCA Argentina to integrate their e-Pak services within your platform.
+This is the **FIRST DRAFT** of a Python wrapper to the SOAP services ([http://webservice.oca.com.ar/oep_tracking/](http://webservice.oca.com.ar/oep_tracking/)) provided by OCA Argentina to integrate their e-Pak services within your platform.
 
 
 ## Installation
@@ -36,7 +36,7 @@ operativa = 72771
 oca.centroCostoPorOperativa(operativa)
 ```
 
-You can check the list of availables 'operativas' with:
+You can check the list of available 'operativas' with:
 
 ```python
 print OcaService.OPERATIVAS
@@ -52,9 +52,9 @@ which outputs a dict containing the following:
 + 72772: 'PaS STD C/P. en destino',
 + 72951: 'PAP STD C/SEG y PAGO E/Destino',
 + 72952: 'PAS STD C/SEG y Pago E/Destino',
-+ 72952: 'PAP STD C/SEG y PAGO EN Destino',
++ 72954: 'PAP STD C/SEG y Pago en Destino',
 + 72953: 'PAP PRIO C/SEG y Pago en Destino',
-+ 72952: 'PAS Prio c/seg y pago en Destino'
++ 72955: 'PAS Prio c/seg y pago en Destino'
 
 ### GetCentrosImposicion
 
@@ -79,10 +79,10 @@ Initialize and:
 
 ```python
 
-dias_retiro = 4 # delta of days to retired the package
+dias_retiro = 4 # delta of days to retrieve the package
 franja_horaria = 1 # 1:8-17 2:8-12 3:14-17
 confirmar_retiro = False # Direct confirmation or Manual Confirmation
-oca.centrosDeImposicion(
+oca.ingresarOR(
 	compra,
 	dias_retiro,
 	franja_horaria,
@@ -150,7 +150,7 @@ Initialize and:
 from datetime import date, timedelta
 to_date = date.today()
 from_date = to_date - timedelta(days=4)
-oca.estadoUltimosEnvios(from_date, to_date)
+oca.listEnvios(from_date, to_date)
 ```
 
 ### Tarifar_Envio_Corporativo
@@ -159,7 +159,7 @@ Initialize and:
 
 ```python
 peso_total = 1 # Kgs
-volumen_total = 20 # ccc
+volumen_total = 20 # cm³
 cp_origen = 1006
 cp_destino = 8430
 n_paquetes = 1
