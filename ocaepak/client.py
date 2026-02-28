@@ -35,9 +35,9 @@ class OcaService(object):
         72772: "Punto a Sucursal Estandar / Pago en Destino",
         72951: "Punto a Punto Estandar con Seguro / Pago en Destino",
         72952: "Punto a Sucursal Estandar con Seguro / Pago en Destino",
-        72952: "Punto a Punto Estandar con Seguro / Pago en Destino",
+        72954: "Punto a Punto Estandar con Seguro / Pago en Destino",
         72953: "Punto a Punto Prioritario con Seguro / Pago en Destino",
-        72952: "Punto a Sucursal Prioritario con Seguro / Pago en Destino",
+        72955: "Punto a Sucursal Prioritario con Seguro / Pago en Destino",
     }
 
     FRANJAS_HORARIAS = {
@@ -108,7 +108,7 @@ class OcaService(object):
 
     def ingresarOR(self, compra, dias_retiro, franja_horaria, confirmar_retiro=False):
         t_file = open(os.path.join(ROOT, "templates", "retiro.xml"))
-        template = [l for l in t_file.readlines()]
+        template = [line for line in t_file.readlines()]
         template = Template("".join(template))
         template_render = template.render(compra).replace("\t", "").replace("\n", "")
         logger.info(template_render)
