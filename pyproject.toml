@@ -22,4 +22,5 @@ Jinja2 = "^3.1.6"
 [tool.poetry.group.dev.dependencies]
 ipython = "^9.10.0"
 pytest = "^9.0.2"
+pytest-mock = "^3.15.1"
 
