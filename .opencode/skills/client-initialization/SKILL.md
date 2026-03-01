@@ -9,11 +9,7 @@ Initialize the OcaService client to interact with OCA Argentina's e-Pak shipping
 
 ## Installation
 
-```bash
-pip install ocaepak
-```
-
-Or install from source:
+Install from source:
 
 ```bash
 pip install -e git+https://github.com/drkloc/py-oca-epak.git#egg=ocaepak

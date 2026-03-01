@@ -6,11 +6,7 @@ This is a **Python wrapper** for the SOAP services provided by OCA Argentina to 
 
 ## Installation
 
-```bash
-pip install ocaepak
-```
-
-Or install from source:
+Install from source:
 
 ```bash
 pip install -e git+https://github.com/drkloc/py-oca-epak.git#egg=ocaepak
