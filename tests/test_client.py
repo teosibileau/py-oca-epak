@@ -837,3 +837,128 @@ class TestOcaService:
             oca_service.getProvincias()
 
         assert "SOAP Fault" in str(exc_info.value)
+
+    # ============================================================
+    # ADMISSION CENTERS TESTS
+    # ============================================================
+
+    def test_centros_de_imposicion_admision_returns_list(self, oca_service):
+        """Verify centrosDeImposicionAdmision returns list of centers."""
+        mock_client = oca_service._mock_client
+        xml_response = """<?xml version="1.0" encoding="utf-8"?>
+        <DataSet>
+            <Table>
+                <idCentroImposicion>101</idCentroImposicion>
+                <Nombre>Centro Admision A</Nombre>
+                <Localidad>Buenos Aires</Localidad>
+            </Table>
+            <Table>
+                <idCentroImposicion>102</idCentroImposicion>
+                <Nombre>Centro Admision B</Nombre>
+                <Localidad>Cordoba</Localidad>
+            </Table>
+        </DataSet>"""
+        mock_client.GetCentrosImposicionAdmision.return_value = self._create_soap_mock(
+            xml_response
+        )
+
+        result = oca_service.centrosDeImposicionAdmision()
+
+        assert len(result) == 2
+        assert result[0]["idCentroImposicion"] == 101
+        assert result[0]["Nombre"] == b"Centro Admision A"
+        assert result[1]["idCentroImposicion"] == 102
+        assert result[1]["Nombre"] == b"Centro Admision B"
+
+    def test_centros_de_imposicion_admision_calls_correct_soap_method(
+        self, oca_service
+    ):
+        """Verify centrosDeImposicionAdmision calls GetCentrosImposicionAdmision."""
+        mock_client = oca_service._mock_client
+        mock_client.GetCentrosImposicionAdmision.return_value = self._create_soap_mock(
+            "<DataSet><Table><idCentroImposicion>1</idCentroImposicion></Table></DataSet>"
+        )
+
+        oca_service.centrosDeImposicionAdmision()
+
+        mock_client.GetCentrosImposicionAdmision.assert_called_once_with()
+
+    def test_centros_de_imposicion_admision_empty_response(self, oca_service):
+        """Verify centrosDeImposicionAdmision handles empty response."""
+        mock_client = oca_service._mock_client
+        mock_client.GetCentrosImposicionAdmision.return_value = self._create_soap_mock(
+            "<DataSet></DataSet>"
+        )
+
+        result = oca_service.centrosDeImposicionAdmision()
+
+        assert result == []
+
+    def test_centros_de_imposicion_admision_soap_error(self, oca_service):
+        """Verify centrosDeImposicionAdmision handles SOAP errors."""
+        mock_client = oca_service._mock_client
+        mock_client.GetCentrosImposicionAdmision.side_effect = Exception("SOAP Error")
+
+        with pytest.raises(Exception) as exc_info:
+            oca_service.centrosDeImposicionAdmision()
+
+        assert "SOAP Error" in str(exc_info.value)
+
+    def test_centros_de_imposicion_admision_por_cp_returns_list(self, oca_service):
+        """Verify centrosDeImposicionAdmisionPorCP returns centers near postal code."""
+        mock_client = oca_service._mock_client
+        xml_response = """<?xml version="1.0" encoding="utf-8"?>
+        <DataSet>
+            <Table>
+                <idCentroImposicion>201</idCentroImposicion>
+                <Nombre>Centro CP 1000</Nombre>
+                <Localidad>Buenos Aires</Localidad>
+            </Table>
+        </DataSet>"""
+        mock_client.GetCentrosImposicionAdmisionPorCP.return_value = (
+            self._create_soap_mock(xml_response)
+        )
+
+        result = oca_service.centrosDeImposicionAdmisionPorCP(1000)
+
+        assert len(result) == 1
+        assert result[0]["idCentroImposicion"] == 201
+        assert result[0]["Nombre"] == b"Centro CP 1000"
+
+    def test_centros_de_imposicion_admision_por_cp_calls_with_postal_code(
+        self, oca_service
+    ):
+        """Verify centrosDeImposicionAdmisionPorCP passes CodigoPostal param."""
+        mock_client = oca_service._mock_client
+        mock_client.GetCentrosImposicionAdmisionPorCP.return_value = self._create_soap_mock(
+            "<DataSet><Table><idCentroImposicion>1</idCentroImposicion></Table></DataSet>"
+        )
+
+        oca_service.centrosDeImposicionAdmisionPorCP(5000)
+
+        mock_client.GetCentrosImposicionAdmisionPorCP.assert_called_once_with(
+            CodigoPostal=5000
+        )
+
+    def test_centros_de_imposicion_admision_por_cp_empty_response(self, oca_service):
+        """Verify centrosDeImposicionAdmisionPorCP handles empty response."""
+        mock_client = oca_service._mock_client
+        mock_client.GetCentrosImposicionAdmisionPorCP.return_value = (
+            self._create_soap_mock("<DataSet></DataSet>")
+        )
+
+        result = oca_service.centrosDeImposicionAdmisionPorCP(9999)
+
+        assert result == []
+
+    def test_centros_de_imposicion_admision_por_cp_soap_error(self, oca_service):
+        """Verify centrosDeImposicionAdmisionPorCP handles SOAP errors."""
+        mock_client = oca_service._mock_client
+        mock_client.GetCentrosImposicionAdmisionPorCP.side_effect = Exception(
+            "Invalid CP"
+        )
+
+        with pytest.raises(Exception) as exc_info:
+            oca_service.centrosDeImposicionAdmisionPorCP(0)
+
+        assert "Invalid CP" in str(exc_info.value)

@@ -167,3 +167,19 @@ class OcaService:
         """Get list of provinces."""
         soap_response = self.client.GetProvincias()
         return self.iterateresult("GetProvinciasResult", soap_response)
+
+    def centrosDeImposicionAdmision(self):
+        """Get all admission centers for package drop-off."""
+        soap_response = self.client.GetCentrosImposicionAdmision()
+        return self.iterateresult("GetCentrosImposicionAdmisionResult", soap_response)
+
+    def centrosDeImposicionAdmisionPorCP(self, cp):
+        """Get admission centers near a postal code.
+
+        Args:
+            cp: Postal code to search near
+        """
+        soap_response = self.client.GetCentrosImposicionAdmisionPorCP(CodigoPostal=cp)
+        return self.iterateresult(
+            "GetCentrosImposicionAdmisionPorCPResult", soap_response
+        )
