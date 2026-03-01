@@ -6,11 +6,7 @@ This is a **Python wrapper** for the SOAP services provided by OCA Argentina to 
 
 ## Installation
 
-```bash
-pip install ocaepak
-```
-
-Or install from source:
+Install from source:
 
 ```bash
 pip install -e git+https://github.com/drkloc/py-oca-epak.git#egg=ocaepak
@@ -31,57 +27,7 @@ oca = OcaService(user, password, cuit)
 
 ## Available Methods
 
-<details>
-<summary><strong>AnularOrdenGenerada</strong> - Cancel a pickup order</summary>
-
-Cancel an existing pickup order by its order number.
-
-```python
-orden = 7849055
-result = oca.anularOrdenGenerada(orden)
-```
-
-**Parameters:**
-- `orden` (int): The order number to cancel
-
-**Returns:** List of dictionaries with cancellation result
-</details>
-
-<details>
-<summary><strong>centroCostoPorOperativa</strong> - Get cost center by service type</summary>
-
-Retrieve cost center information for a specific service type (operativa).
-
-```python
-operativa = 72771
-result = oca.centroCostoPorOperativa(operativa)
-```
-
-**Parameters:**
-- `operativa` (int): Service type code
-
-**Returns:** List of dictionaries with cost center details
-
-**Available operativas:**
-
-```python
-# View all available service types
-print(OcaService.OPERATIVAS)
-```
-
-Available options:
-- `72767`: Punto a Punto STD C/A P. en destino y SEGURO
-- `72768`: Punto a Sucursal STD C/ P. en destino y SEGURO
-- `72769`: PaP PRIOR C/P. en destino y SEGURO
-- `72770`: PaS PRIO C/P. en destino y SEGURO
-- `72771`: PaP STD C/P. en destino
-- `72772`: PaS STD C/P. en destino
-- `72951`: PAP STD C/SEG y PAGO E/Destino
-- `72952`: PAS STD C/SEG y Pago E/Destino
-- `72954`: PAP STD C/SEG y Pago en Destino
-- `72953`: PAP PRIO C/SEG y Pago en Destino
-- `72955`: PAS Prio c/seg y pago en Destino
-</details>
+### Geographic Services
 
 <details>
 <summary><strong>centrosDeImposicion</strong> - Get all pickup centers</summary>
@@ -264,6 +210,60 @@ result = oca.getServiciosDeCentrosImposicionPorProvincia(2, "LA PLATA")
 **Returns:** List of dictionaries with center information and services (same structure as getServiciosDeCentrosImposicion)
 </details>
 
+### Core Operations
+
+<details>
+<summary><strong>AnularOrdenGenerada</strong> - Cancel a pickup order</summary>
+
+Cancel an existing pickup order by its order number.
+
+```python
+orden = 7849055
+result = oca.anularOrdenGenerada(orden)
+```
+
+**Parameters:**
+- `orden` (int): The order number to cancel
+
+**Returns:** List of dictionaries with cancellation result
+</details>
+
+<details>
+<summary><strong>centroCostoPorOperativa</strong> - Get cost center by service type</summary>
+
+Retrieve cost center information for a specific service type (operativa).
+
+```python
+operativa = 72771
+result = oca.centroCostoPorOperativa(operativa)
+```
+
+**Parameters:**
+- `operativa` (int): Service type code
+
+**Returns:** List of dictionaries with cost center details
+
+**Available operativas:**
+
+```python
+# View all available service types
+print(OcaService.OPERATIVAS)
+```
+
+Available options:
+- `72767`: Punto a Punto STD C/A P. en destino y SEGURO
+- `72768`: Punto a Sucursal STD C/ P. en destino y SEGURO
+- `72769`: PaP PRIOR C/P. en destino y SEGURO
+- `72770`: PaS PRIO C/P. en destino y SEGURO
+- `72771`: PaP STD C/P. en destino
+- `72772`: PaS STD C/P. en destino
+- `72951`: PAP STD C/SEG y PAGO E/Destino
+- `72952`: PAS STD C/SEG y Pago E/Destino
+- `72954`: PAP STD C/SEG y Pago en Destino
+- `72953`: PAP PRIO C/SEG y Pago en Destino
+- `72955`: PAS Prio c/seg y pago en Destino
+</details>
+
 <details>
 <summary><strong>ingresarOR</strong> - Create pickup order</summary>
 
@@ -435,6 +435,8 @@ result = oca.tarifarEnvioCorporativo(
 **Returns:** List of dictionaries with pricing information
 </details>
 
+### Tracking
+
 <details>
 <summary><strong>trackingOR</strong> - Track pickup order</summary>
 
@@ -511,6 +513,8 @@ result = oca.trackingEnvioEstadoActual(numero_envio)
 ```
 </details>
 
+### QR Codes
+
 <details>
 <summary><strong>generateQrByOrdenDeRetiro</strong> - Generate QR by pickup order</summary>
 
@@ -582,6 +586,8 @@ result = oca.generarConsolidacionDeOrdenesDeRetiro(ordenes)
 }
 ```
 </details>
+
+### Labels
 
 <details>
 <summary><strong>getCSSDeEtiquetasPorOrdenOrNumeroEnvio</strong> - Get label CSS styles</summary>
