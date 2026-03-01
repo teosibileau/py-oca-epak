@@ -22,6 +22,7 @@ class OcaService:
         "idTipoSercicio",
         "PlazoEntrega",
         "Tarifador",
+        "idProvincia",
     ]
     LABELS_FOR_FLOATS = ["Precio", "Adicional", "Total"]
     LABELS_FOR_DATETIMES = ["fecha"]
@@ -161,3 +162,8 @@ class OcaService:
             NroDocumentoCliente=nro_documento, CUIT=cuit
         )
         return self.iterateresult("Tracking_PiezaResult", soap_response)
+
+    def getProvincias(self):
+        """Get list of provinces."""
+        soap_response = self.client.GetProvincias()
+        return self.iterateresult("GetProvinciasResult", soap_response)

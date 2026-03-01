@@ -173,6 +173,7 @@ class TestOcaService:
             "idTipoSercicio",
             "PlazoEntrega",
             "Tarifador",
+            "idProvincia",
         ]
         assert OcaService.LABELS_FOR_INTEGERS == expected
 
@@ -776,3 +777,63 @@ class TestOcaService:
 
         with pytest.raises(ValueError):
             OcaService.iterateresult("BadNum", mock_xml_result)
+
+    # ============================================================
+    # GETPROVINCIAS TESTS
+    # ============================================================
+
+    def test_get_provincias_returns_list(self, oca_service):
+        """Verify getProvincias returns list of provinces."""
+        mock_client = oca_service._mock_client
+        xml_response = """<?xml version="1.0" encoding="utf-8"?>
+        <DataSet>
+            <Table>
+                <idProvincia>1</idProvincia>
+                <Nombre>Buenos Aires</Nombre>
+            </Table>
+            <Table>
+                <idProvincia>2</idProvincia>
+                <Nombre>Cordoba</Nombre>
+            </Table>
+        </DataSet>"""
+        mock_client.GetProvincias.return_value = self._create_soap_mock(xml_response)
+
+        result = oca_service.getProvincias()
+
+        assert len(result) == 2
+        assert result[0]["idProvincia"] == 1
+        assert result[0]["Nombre"] == b"Buenos Aires"
+        assert result[1]["idProvincia"] == 2
+        assert result[1]["Nombre"] == b"Cordoba"
+
+    def test_get_provincias_calls_correct_soap_method(self, oca_service):
+        """Verify getProvincias calls GetProvincias with no params."""
+        mock_client = oca_service._mock_client
+        mock_client.GetProvincias.return_value = self._create_soap_mock(
+            "<DataSet><Table><idProvincia>1</idProvincia></Table></DataSet>"
+        )
+
+        oca_service.getProvincias()
+
+        mock_client.GetProvincias.assert_called_once_with()
+
+    def test_get_provincias_empty_response(self, oca_service):
+        """Verify getProvincias handles empty response."""
+        mock_client = oca_service._mock_client
+        mock_client.GetProvincias.return_value = self._create_soap_mock(
+            "<DataSet></DataSet>"
+        )
+
+        result = oca_service.getProvincias()
+
+        assert result == []
+
+    def test_get_provincias_soap_error(self, oca_service):
+        """Verify getProvincias handles SOAP errors."""
+        mock_client = oca_service._mock_client
+        mock_client.GetProvincias.side_effect = Exception("SOAP Fault")
+
+        with pytest.raises(Exception) as exc_info:
+            oca_service.getProvincias()
+
+        assert "SOAP Fault" in str(exc_info.value)
