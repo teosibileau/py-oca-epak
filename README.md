@@ -1,114 +1,316 @@
-# Oca e-Pak python wrapper
+# Oca e-Pak Python wrapper
 
-This is the **FIRST DRAFT** of a python wrapper to the SOAP services ([http://webservice.oca.com.ar/oep_tracking/](http://webservice.oca.com.ar/oep_tracking/)) provided by OCA Argentina to integrate their e-Pak services within your platform.
+This is a **Python wrapper** for the SOAP services provided by OCA Argentina to integrate their e-Pak shipping services.
 
+**SOAP Service URL:** [http://webservice.oca.com.ar/oep_tracking/](http://webservice.oca.com.ar/oep_tracking/)
 
 ## Installation
+
+```bash
+pip install ocaepak
+```
+
+Or install from source:
 
 ```bash
 pip install -e git+https://github.com/drkloc/py-oca-epak.git#egg=ocaepak
 ```
 
-## Usage
+## Quick Start
 
 ```python
 from ocaepak.client import OcaService
-# Initialize with your user, password and cuit
-(user, password, cuit) = ('your_user', 'your_password', 'your_cuit')
+
+# Initialize with your credentials
+user = 'your_user'
+password = 'your_password'
+cuit = 'your_cuit'
+
 oca = OcaService(user, password, cuit)
 ```
 
-### AnularOrdenGenerada
+## Available Methods
 
-Initialize and:
+<details>
+<summary><strong>AnularOrdenGenerada</strong> - Cancel a pickup order</summary>
+
+Cancel an existing pickup order by its order number.
 
 ```python
 orden = 7849055
-oca.anularOrdenGenerada(orden)
+result = oca.anularOrdenGenerada(orden)
 ```
 
-### GetCentroCostoPorOperativa
+**Parameters:**
+- `orden` (int): The order number to cancel
 
-Initialize and:
+**Returns:** List of dictionaries with cancellation result
+</details>
+
+<details>
+<summary><strong>centroCostoPorOperativa</strong> - Get cost center by service type</summary>
+
+Retrieve cost center information for a specific service type (operativa).
 
 ```python
 operativa = 72771
-oca.centroCostoPorOperativa(operativa)
+result = oca.centroCostoPorOperativa(operativa)
 ```
 
-You can check the list of availables 'operativas' with:
+**Parameters:**
+- `operativa` (int): Service type code
+
+**Returns:** List of dictionaries with cost center details
+
+**Available operativas:**
 
 ```python
-print OcaService.OPERATIVAS
+# View all available service types
+print(OcaService.OPERATIVAS)
 ```
 
-which outputs a dict containing the following:
+Available options:
+- `72767`: Punto a Punto STD C/A P. en destino y SEGURO
+- `72768`: Punto a Sucursal STD C/ P. en destino y SEGURO
+- `72769`: PaP PRIOR C/P. en destino y SEGURO
+- `72770`: PaS PRIO C/P. en destino y SEGURO
+- `72771`: PaP STD C/P. en destino
+- `72772`: PaS STD C/P. en destino
+- `72951`: PAP STD C/SEG y PAGO E/Destino
+- `72952`: PAS STD C/SEG y Pago E/Destino
+- `72954`: PAP STD C/SEG y Pago en Destino
+- `72953`: PAP PRIO C/SEG y Pago en Destino
+- `72955`: PAS Prio c/seg y pago en Destino
+</details>
 
-+ 72767: 'Punto a Punto STD C/A P. en destino y SEGURO',
-+ 72768: 'Punto a Sucursal STD C/ P. en destino y SEGURO',
-+ 72769: 'PaP PRIOR C/P. en destino y SEGURO',
-+ 72770: 'PaS PRIO C/P. en destino y SEGURO',
-+ 72771: 'PaP STD C/P. en destino',
-+ 72772: 'PaS STD C/P. en destino',
-+ 72951: 'PAP STD C/SEG y PAGO E/Destino',
-+ 72952: 'PAS STD C/SEG y Pago E/Destino',
-+ 72952: 'PAP STD C/SEG y PAGO EN Destino',
-+ 72953: 'PAP PRIO C/SEG y Pago en Destino',
-+ 72952: 'PAS Prio c/seg y pago en Destino'
+<details>
+<summary><strong>centrosDeImposicion</strong> - Get all pickup centers</summary>
 
-### GetCentrosImposicion
-
-Initialize and:
+Retrieve a list of all OCA pickup centers (Centros de Imposición).
 
 ```python
-oca.centrosDeImposicion()
+result = oca.centrosDeImposicion()
 ```
 
-### GetCentrosImposicionPorCP
+**Returns:** List of dictionaries with pickup center details
+</details>
 
-Initialize and:
+<details>
+<summary><strong>centrosDeImposicionPorCP</strong> - Get pickup centers by postal code</summary>
+
+Find pickup centers near a specific postal code.
 
 ```python
 cp = 8430
-oca.centrosDeImposicionPorCP(cp)
+result = oca.centrosDeImposicionPorCP(cp)
 ```
 
-### IngresoOR
+**Parameters:**
+- `cp` (int): Postal code to search
 
-Initialize and:
+**Returns:** List of dictionaries with nearby pickup centers
+</details>
+
+<details>
+<summary><strong>centrosDeImposicionAdmision</strong> - Get admission centers</summary>
+
+Retrieve all admission centers for package drop-off.
 
 ```python
+result = oca.centrosDeImposicionAdmision()
+```
 
-dias_retiro = 4 # delta of days to retired the package
-franja_horaria = 1 # 1:8-17 2:8-12 3:14-17
-confirmar_retiro = False # Direct confirmation or Manual Confirmation
-oca.centrosDeImposicion(
-	compra,
-	dias_retiro,
-	franja_horaria,
-	confirmar_retiro
+**Returns:** List of dictionaries with admission center details
+</details>
+
+<details>
+<summary><strong>centrosDeImposicionAdmisionPorCP</strong> - Get admission centers by postal code</summary>
+
+Find admission centers near a specific postal code.
+
+```python
+cp = 1000
+result = oca.centrosDeImposicionAdmisionPorCP(cp)
+```
+
+**Parameters:**
+- `cp` (int): Postal code to search
+
+**Returns:** List of dictionaries with nearby admission centers
+</details>
+
+<details>
+<summary><strong>getProvincias</strong> - Get all provinces</summary>
+
+Retrieve a list of all Argentine provinces with their IDs.
+
+```python
+result = oca.getProvincias()
+```
+
+**Returns:** List of dictionaries with province information:
+```python
+[
+    {'IdProvincia': '1', 'Descripcion': 'BUENOS AIRES'},
+    {'IdProvincia': '2', 'Descripcion': 'CAPITAL FEDERAL'},
+    # ... more provinces
+]
+```
+</details>
+
+<details>
+<summary><strong>getLocalidadesByProvincia</strong> - Get localities by province</summary>
+
+Retrieve all localities (cities/towns) for a given province ID.
+
+```python
+id_provincia = 1  # Buenos Aires
+result = oca.getLocalidadesByProvincia(id_provincia)
+```
+
+**Parameters:**
+- `id_provincia` (int): Province ID (from getProvincias)
+
+**Returns:** List of dictionaries with locality names:
+```python
+[
+    {'Nombre': 'CAPITAL FEDERAL'},
+    {'Nombre': '12 DE OCTUBRE'},
+    # ... more localities
+]
+```
+</details>
+
+<details>
+<summary><strong>getServiciosDeCentrosImposicion</strong> - Get services by center</summary>
+
+Retrieve all pickup centers with their available services. This includes detailed center information (address, coordinates, contact) and a list of services offered at each location.
+
+```python
+result = oca.getServiciosDeCentrosImposicion()
+```
+
+**Returns:** List of dictionaries with center information:
+```python
+[
+    {
+        'IdCentroImposicion': '2',
+        'Calle': 'BLVD. BUENOS AIRES',
+        'Numero': '1459',
+        'Localidad': 'LUIS GUILLON',
+        'Provincia': 'BUENOS AIRES',
+        'Telefono': '4367-5729',
+        'Latitud': '-34.8098435',
+        'Longitud': '-58.4477191',
+        'TipoAgencia': 'Sucursal OCA',
+        'Sigla': 'ADG',
+        'Sucursal': 'SUCURSAL OCA: LUIS GUILLÓN',
+        'Servicios': [
+            {'IdTipoServicio': '1', 'ServicioDesc': 'Admisión de paquetes'},
+            {'IdTipoServicio': '2', 'ServicioDesc': 'Entrega de paquetes'},
+            {'IdTipoServicio': '3', 'ServicioDesc': 'Venta Estampillas'}
+        ]
+    },
+    # ... more centers
+]
+```
+</details>
+
+<details>
+<summary><strong>getELockerOCA</strong> - Get available eLockers</summary>
+
+Retrieve all available OCA eLockers (Smart Lockers) with their locations and identification codes.
+
+```python
+result = oca.getELockerOCA()
+```
+
+**Returns:** List of dictionaries with eLocker information:
+```python
+[
+    {
+        'IDLocker': 5199,
+        'Sigla': b'62A',
+        'Descripcion': b'SmartLocker OCA - ParkingCity',
+        'Calle': b'Maipu',
+        'Numero': b'119',
+        'Piso': None,
+        'Localidad': b'ALBERDI',
+        'Provincia': b'CORDOBA',
+        'CodigoPostal': b'5000'
+    },
+    # ... more lockers
+]
+```
+</details>
+
+<details>
+<summary><strong>getServiciosDeCentrosImposicionPorProvincia</strong> - Get services by province</summary>
+
+Retrieve pickup centers and their services filtered by province and optionally by locality. Similar to getServiciosDeCentrosImposicion but with filtering capabilities.
+
+```python
+# Get all centers in Buenos Aires (province ID 2)
+result = oca.getServiciosDeCentrosImposicionPorProvincia(2)
+
+# Get centers in a specific city
+result = oca.getServiciosDeCentrosImposicionPorProvincia(2, "LA PLATA")
+```
+
+**Parameters:**
+- `provincia_id` (int): Province ID to filter by
+- `localidad` (str, optional): Locality/city name to filter by. Defaults to empty string (all localities).
+
+**Returns:** List of dictionaries with center information and services (same structure as getServiciosDeCentrosImposicion)
+</details>
+
+<details>
+<summary><strong>ingresarOR</strong> - Create pickup order</summary>
+
+Create a new pickup order (Orden de Retiro) for package collection.
+
+```python
+from datetime import date
+
+# Pickup configuration
+dias_retiro = 4  # Days from now to pickup
+franja_horaria = 1  # 1: 8-17hs, 2: 8-12hs, 3: 14-17hs
+confirmar_retiro = False  # Auto-confirm (True) or manual confirmation (False)
+
+# Create pickup order
+result = oca.ingresarOR(
+    compra,
+    dias_retiro,
+    franja_horaria,
+    confirmar_retiro
 )
 ```
 
-compra should resemble the following:
+**Parameters:**
+- `compra` (dict): Package and delivery details (see structure below)
+- `dias_retiro` (int): Days from now for pickup
+- `franja_horaria` (int): Time window (1, 2, or 3)
+- `confirmar_retiro` (bool): Auto-confirm the order
+
+**Compra structure:**
 
 ```python
 compra = {
     'numero_cuenta': '142357/000',
     'retiro': {
-	    'calle': '11 de Septiembre',
-	    'numero': 3123,
-	    'piso': '-',
-	    'departamento': '-',
-	    'cp': 1426,
-	    'localidad': 'Capital Federal',
-	    'provincia': '-',
-	    'contacto': 'Martina Pi',
-	    'solicitante': 'Martina Pi',
-	    'email': 'martina@pi.com',
-	    'observaciones': 'Observaciones',
-	    'centro_de_costo': 0 # 0 for PaP 1 for PaS
-	},
+        'calle': '11 de Septiembre',
+        'numero': 3123,
+        'piso': '-',
+        'departamento': '-',
+        'cp': 1426,
+        'localidad': 'Capital Federal',
+        'provincia': '-',
+        'contacto': 'Martina Pi',
+        'solicitante': 'Martina Pi',
+        'email': 'martina@pi.com',
+        'observaciones': 'Observaciones',
+        'centro_de_costo': 0  # 0 for PaP, 1 for PaS
+    },
     'envios': [
         {
             'id_operativa': 72771,
@@ -142,38 +344,494 @@ compra = {
 }
 ```
 
-### List_Envios
+**Time windows (franja_horaria):**
+```python
+# Available time windows
+OcaService.FRANJAS_HORARIAS = {
+    1: "8 a 17hs",
+    2: "8 a 12hs",
+    3: "14 a 17hs"
+}
+```
 
-Initialize and:
+**Returns:** SOAP response with order details
+</details>
+
+<details>
+<summary><strong>estadoUltimosEnvios</strong> - Get recent shipments status</summary>
+
+Retrieve the latest status for shipments within a date range for specific service types.
 
 ```python
 from datetime import date, timedelta
+
+operativas = ["72771", "72772"]
+from_date = date.today() - timedelta(days=7)
 to_date = date.today()
-from_date = to_date - timedelta(days=4)
-oca.estadoUltimosEnvios(from_date, to_date)
+
+result = oca.estadoUltimosEnvios(operativas, from_date, to_date)
 ```
 
-### Tarifar_Envio_Corporativo
+**Parameters:**
+- `operativas` (list): List of service type codes
+- `from_date` (datetime): Start date
+- `to_date` (datetime): End date
 
-Initialize and:
+**Returns:** List of dictionaries with shipment status information
+</details>
+
+<details>
+<summary><strong>listEnvios</strong> - List shipments</summary>
+
+List all shipments within a date range.
 
 ```python
-peso_total = 1 # Kgs
-volumen_total = 20 # ccc
+from datetime import date, timedelta
+
+to_date = date.today()
+from_date = to_date - timedelta(days=4)
+
+result = oca.listEnvios(from_date, to_date)
+```
+
+**Parameters:**
+- `from_date` (datetime): Start date
+- `to_date` (datetime): End date
+
+**Returns:** List of dictionaries with shipment details
+</details>
+
+<details>
+<summary><strong>tarifarEnvioCorporativo</strong> - Calculate shipping rate</summary>
+
+Calculate the shipping cost for a corporate shipment.
+
+```python
+peso_total = 1.0  # kg
+volumen_total = 20  # cm³
 cp_origen = 1006
 cp_destino = 8430
 n_paquetes = 1
 operativa = 72771
-oca.tarifarEnvioCorporativo(
-	peso_total,
-	volumen_total,
-	cp_origen,
-	cp_destino,
-	n_paquetes,
-	operativa
+
+result = oca.tarifarEnvioCorporativo(
+    peso_total,
+    volumen_total,
+    cp_origen,
+    cp_destino,
+    n_paquetes,
+    operativa
 )
 ```
 
-### Tracking_OrdenRetiro
+**Parameters:**
+- `peso_total` (float): Total weight in kg
+- `volumen_total` (int): Total volume in cm³
+- `cp_origen` (int): Origin postal code
+- `cp_destino` (int): Destination postal code
+- `n_paquetes` (int): Number of packages
+- `operativa` (int): Service type code
 
-### Tracking_Pieza
+**Returns:** List of dictionaries with pricing information
+</details>
+
+<details>
+<summary><strong>trackingOR</strong> - Track pickup order</summary>
+
+Track the status of a pickup order by its order number.
+
+```python
+orden_retiro = 12345
+result = oca.trackingOR(orden_retiro)
+```
+
+**Parameters:**
+- `orden_retiro` (int): Pickup order number
+
+**Returns:** List of dictionaries with tracking information
+</details>
+
+<details>
+<summary><strong>trackingPiezaConID</strong> - Track piece by ID</summary>
+
+Track a package using its piece ID.
+
+```python
+pieza = "123456789"
+result = oca.trackingPiezaConID(pieza)
+```
+
+**Parameters:**
+- `pieza` (str): Piece tracking ID
+
+**Returns:** List of dictionaries with tracking details
+</details>
+
+<details>
+<summary><strong>trackingPiezaConDNICUIT</strong> - Track pieces by DNI/CUIT</summary>
+
+Track all packages associated with a DNI or CUIT number.
+
+```python
+nro_documento = "30123456"
+cuit = "20-12345678-9"
+result = oca.trackingPiezaConDNICUIT(nro_documento, cuit)
+```
+
+**Parameters:**
+- `nro_documento` (str): DNI or document number
+- `cuit` (str): CUIT number
+
+**Returns:** List of dictionaries with tracking information for all matching packages
+</details>
+
+<details>
+<summary><strong>trackingEnvioEstadoActual</strong> - Track shipment current status</summary>
+
+Get the current status of a shipment with branch position information. This method returns the shipment data with the current status and the global position of the branch where the package is currently located.
+
+```python
+numero_envio = "123456789"
+result = oca.trackingEnvioEstadoActual(numero_envio)
+```
+
+**Parameters:**
+- `numero_envio` (str): Shipment/tracking number
+
+**Returns:** List of dictionaries with current tracking information:
+```python
+[
+    {
+        'NumeroEnvio': 123456789,
+        'Estado': b'En transito',
+        'Sucursal': b'BUENOS AIRES',
+        'Fecha': datetime(2024, 1, 15, 10, 30)
+    }
+]
+```
+</details>
+
+<details>
+<summary><strong>generateQrByOrdenDeRetiro</strong> - Generate QR by pickup order</summary>
+
+Generate a base64 encoded QR code string for a specific pickup order.
+
+```python
+id_orden_retiro = "12345"
+qr_base64 = oca.generateQrByOrdenDeRetiro(id_orden_retiro)
+```
+
+**Parameters:**
+- `id_orden_retiro` (str): Pickup order ID
+
+**Returns:** Base64 encoded QR code string
+</details>
+
+<details>
+<summary><strong>generateQrParaPaquetes</strong> - Generate QR for package</summary>
+
+Generate a base64 encoded QR code string for a specific package within a shipment.
+
+```python
+numero_envio = "987654321"
+id_paquete = "PKG001"
+qr_base64 = oca.generateQrParaPaquetes(numero_envio, id_paquete)
+```
+
+**Parameters:**
+- `numero_envio` (str): Shipment/tracking number
+- `id_paquete` (str): Package ID
+
+**Returns:** Base64 encoded QR code string
+</details>
+
+<details>
+<summary><strong>generateListQrPorEnvio</strong> - Generate QR codes for shipment</summary>
+
+Generate a list of base64 encoded QR code strings for all packages within a shipment.
+
+```python
+numero_envio = "555666777"
+qr_list = oca.generateListQrPorEnvio(numero_envio)
+```
+
+**Parameters:**
+- `numero_envio` (str): Shipment/tracking number
+
+**Returns:** List of base64 encoded QR code strings
+</details>
+
+<details>
+<summary><strong>generarConsolidacionDeOrdenesDeRetiro</strong> - Consolidate pickup orders</summary>
+
+Consolidate multiple pickup orders (Ordenes de Retiro) into a single consolidated order. This is useful when you have multiple pickup orders that should be processed together.
+
+```python
+ordenes = ["12345", "12346", "12347"]
+result = oca.generarConsolidacionDeOrdenesDeRetiro(ordenes)
+```
+
+**Parameters:**
+- `ordenes` (list): List of pickup order IDs to consolidate
+
+**Returns:** Dictionary with consolidation information:
+```python
+{
+    'IdDeConsolidacion': 'CONS123',
+    'CantidadDeOrdenes': 3
+}
+```
+</details>
+
+<details>
+<summary><strong>getCSSDeEtiquetasPorOrdenOrNumeroEnvio</strong> - Get label CSS styles</summary>
+
+Obtains the CSS styles for the base HTML code of labels belonging to a pickup order.
+
+```python
+css = oca.getCSSDeEtiquetasPorOrdenOrNumeroEnvio(para_etiquetadora=True)
+```
+
+**Parameters:**
+- `para_etiquetadora` (bool, optional): Whether the CSS is for a label printer. Defaults to False.
+
+**Returns:** CSS styles as a string
+</details>
+
+<details>
+<summary><strong>getDatosDeEtiquetasPorOrdenOrNumeroEnvio</strong> - Get label data</summary>
+
+Obtains the source code of labels belonging to a pickup order or shipment number. Returns structured data for each label.
+
+```python
+labels = oca.getDatosDeEtiquetasPorOrdenOrNumeroEnvio(
+    id_orden_retiro=12345,
+    nro_envio="987654321",
+    is_locker=False
+)
+```
+
+**Parameters:**
+- `id_orden_retiro` (int): Pickup order ID (required)
+- `nro_envio` (str, optional): Shipment number
+- `is_locker` (bool): Whether it's a locker delivery. Defaults to False.
+
+**Returns:** List of dictionaries with label data including:
+- NroOrden, NroGuia, DocCliente, Servicio
+- Destinatario, Domicilio, Telefono
+- QR, CodeBar, and more
+</details>
+
+<details>
+<summary><strong>getDivDeEtiquetaByIdPieza</strong> - Get label div by piece ID</summary>
+
+Obtains the HTML div element for a label identified by piece ID.
+
+```python
+div_html = oca.getDivDeEtiquetaByIdPieza("PIEZA001")
+```
+
+**Parameters:**
+- `id_pieza` (str): Piece ID
+
+**Returns:** HTML div as a string
+</details>
+
+<details>
+<summary><strong>getDivDeEtiquetasPorOrdenOrNumeroEnvio</strong> - Get label divs by order</summary>
+
+Obtains the HTML div elements for labels belonging to a pickup order or shipment number.
+
+```python
+divs_html = oca.getDivDeEtiquetasPorOrdenOrNumeroEnvio(
+    id_orden_retiro=12345,
+    nro_envio="987654321"
+)
+```
+
+**Parameters:**
+- `id_orden_retiro` (int): Pickup order ID
+- `nro_envio` (str, optional): Shipment number
+
+**Returns:** HTML divs as a string
+</details>
+
+<details>
+<summary><strong>getHtmlDeEtiquetasPorOrdenOrNumeroEnvio</strong> - Get full label HTML</summary>
+
+Obtains the complete HTML source code for labels belonging to a pickup order or shipment number.
+
+```python
+html = oca.getHtmlDeEtiquetasPorOrdenOrNumeroEnvio(
+    id_orden_retiro=12345,
+    nro_envio="987654321"
+)
+```
+
+**Parameters:**
+- `id_orden_retiro` (int): Pickup order ID (required)
+- `nro_envio` (str, optional): Shipment number
+
+**Returns:** Complete HTML as a string
+</details>
+
+<details>
+<summary><strong>getHtmlDeEtiquetasPorOrdenOrNumeroEnvioParaEtiquetadora</strong> - Get printer HTML</summary>
+
+Obtains the HTML source code for labels formatted specifically for label printers.
+
+```python
+printer_html = oca.getHtmlDeEtiquetasPorOrdenOrNumeroEnvioParaEtiquetadora(
+    id_orden_retiro=12345,
+    nro_envio="987654321"
+)
+```
+
+**Parameters:**
+- `id_orden_retiro` (int): Pickup order ID (required)
+- `nro_envio` (str, optional): Shipment number
+
+**Returns:** HTML formatted for label printer as a string
+</details>
+
+<details>
+<summary><strong>getHtmlDeEtiquetasPorOrdenes</strong> - Get HTML for multiple orders</summary>
+
+Obtains the HTML source code for labels from multiple pickup orders.
+
+```python
+html = oca.getHtmlDeEtiquetasPorOrdenes([12345, 12346, 12347])
+```
+
+**Parameters:**
+- `id_ordenes` (list): List of pickup order IDs
+
+**Returns:** HTML as a string
+</details>
+
+<details>
+<summary><strong>getPdfDeEtiquetasPorOrdenOrNumeroEnvio</strong> - Get label PDF</summary>
+
+Obtains a PDF containing labels belonging to a pickup order or shipment number.
+
+```python
+pdf_base64 = oca.getPdfDeEtiquetasPorOrdenOrNumeroEnvio(
+    id_orden_retiro=12345,
+    nro_envio="987654321",
+    logistica_inversa=False
+)
+```
+
+**Parameters:**
+- `id_orden_retiro` (int): Pickup order ID (required)
+- `nro_envio` (str, optional): Shipment number
+- `logistica_inversa` (bool, optional): Whether it's reverse logistics. Defaults to False.
+
+**Returns:** Base64 encoded PDF as a string
+</details>
+
+<details>
+<summary><strong>getPdfDeEtiquetasPorOrdenOrNumeroEnvioAdidas</strong> - Get Adidas PDF</summary>
+
+Obtains an Adidas-specific PDF containing labels belonging to a pickup order or shipment number.
+
+```python
+adidas_pdf = oca.getPdfDeEtiquetasPorOrdenOrNumeroEnvioAdidas(
+    id_orden_retiro=12345,
+    nro_envio="987654321"
+)
+```
+
+**Parameters:**
+- `id_orden_retiro` (int): Pickup order ID (required)
+- `nro_envio` (str, optional): Shipment number
+
+**Returns:** Base64 encoded PDF as a string
+</details>
+
+<details>
+<summary><strong>getPdfDeEtiquetasPorOrdenOrNumeroEnvioParaEtiquetadora</strong> - Get printer PDF</summary>
+
+Obtains a PDF containing labels formatted specifically for label printers.
+
+```python
+printer_pdf = oca.getPdfDeEtiquetasPorOrdenOrNumeroEnvioParaEtiquetadora(
+    id_orden_retiro=12345,
+    nro_envio="987654321"
+)
+```
+
+**Parameters:**
+- `id_orden_retiro` (int): Pickup order ID (required)
+- `nro_envio` (str, optional): Shipment number
+
+**Returns:** Base64 encoded PDF as a string
+</details>
+
+<details>
+<summary><strong>obtenerEtiquetasZPL</strong> - Get ZPL label code</summary>
+
+Obtains ZPL (Zebra Programming Language) code for labels. At least one of orden_retiro or numero_envio must be provided.
+
+```python
+zpl_codes = oca.obtenerEtiquetasZPL(
+    orden_retiro="12345",
+    numero_envio="987654321",
+    numero_bulto="1"
+)
+```
+
+**Parameters:**
+- `orden_retiro` (str, optional): Pickup order ID
+- `numero_envio` (str, optional): Shipment number
+- `numero_bulto` (str, optional): Package number (requires numero_envio if provided)
+
+**Returns:** List of ZPL code strings
+</details>
+
+## Response Parsing
+
+The client includes two static methods for parsing XML responses:
+
+### iterateresult
+Parses DataSet XML responses with `<Table>` elements (used by most methods):
+
+```python
+from ocaepak.client import OcaService
+
+# Parse a Table-based response
+result = OcaService.iterateresult("ResultName", soap_response)
+```
+
+### parse_list_result
+Parses simple list XML responses (used by getProvincias and getLocalidadesByProvincia):
+
+```python
+from ocaepak.client import OcaService
+
+# Parse a list response
+xml_string = "<Provincias>...</Provincias>"
+result = OcaService.parse_list_result(xml_string, "Provincia")
+```
+
+### parse_nested_list_result
+Parses XML responses with nested list structures (used by getServiciosDeCentrosImposicion):
+
+```python
+from ocaepak.client import OcaService
+
+# Parse a response with nested elements
+xml_string = "<CentrosDeImposicion>...</CentrosDeImposicion>"
+result = OcaService.parse_nested_list_result(xml_string, "Centro", "Servicio")
+```
+
+**Parameters:**
+- `xml_string` (str): XML content to parse
+- `item_tag` (str): Tag name for individual items (e.g., 'Centro')
+- `nested_tag` (str, optional): Tag name for nested lists (e.g., 'Servicio')
+
+**Returns:** List of dictionaries with field names as keys. If `nested_tag` is provided, nested elements are parsed as lists.
+
+## License
+
+MIT License - See LICENSE file for details.

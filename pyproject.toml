@@ -1,0 +1,26 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "ocaepak"
+version = "0.1"
+description = "A Python e-Pak wrapper for OCA Argentina shipping services"
+authors = ["Teofilo Sibileau <teo.sibileau@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/drkloc/py-oca-epak"
+repository = "https://github.com/drkloc/py-oca-epak"
+packages = [{include = "ocaepak"}]
+include = ["ocaepak/templates/*"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+PySimpleSOAP = "^1.16.2"
+Jinja2 = "^3.1.6"
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^9.10.0"
+pytest = "^9.0.2"
+pytest-mock = "^3.15.1"
+
