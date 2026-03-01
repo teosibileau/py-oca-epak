@@ -369,3 +369,58 @@ class OcaService:
         """
         soap_response = self.client.TrackingEnvio_EstadoActual(numeroEnvio=numero_envio)
         return self.iterateresult("TrackingEnvio_EstadoActualResult", soap_response)
+
+    def generateQrByOrdenDeRetiro(self, id_orden_retiro):
+        """Generate QR code for a pickup order.
+
+        Generates a base64 encoded QR code string for the given
+        pickup order ID.
+
+        Args:
+            id_orden_retiro (str): Pickup order ID
+
+        Returns:
+            str: Base64 encoded QR code string
+        """
+        soap_response = self.client.GenerateQrByOrdenDeRetiro(
+            usr=self.user, psw=self.password, idOrdenDeRetiro=id_orden_retiro
+        )
+        return soap_response.GenerateQrByOrdenDeRetiroResult
+
+    def generateQrParaPaquetes(self, numero_envio, id_paquete):
+        """Generate QR code for a package.
+
+        Generates a base64 encoded QR code string for a specific
+        package within a shipment.
+
+        Args:
+            numero_envio (str): Shipment/tracking number
+            id_paquete (str): Package ID
+
+        Returns:
+            str: Base64 encoded QR code string
+        """
+        soap_response = self.client.GenerateQRParaPaquetes(
+            usr=self.user,
+            psw=self.password,
+            numeroDeEnvio=numero_envio,
+            idpaquete=id_paquete,
+        )
+        return soap_response.GenerateQRParaPaquetesResult
+
+    def generateListQrPorEnvio(self, numero_envio):
+        """Generate QR codes list for a shipment.
+
+        Generates a list of base64 encoded QR code strings for all
+        packages within a shipment.
+
+        Args:
+            numero_envio (str): Shipment/tracking number
+
+        Returns:
+            list: List of base64 encoded QR code strings
+        """
+        soap_response = self.client.GenerateListQrPorEnvio(
+            usr=self.user, psw=self.password, numeroDeEnvio=numero_envio
+        )
+        return soap_response.GenerateListQrPorEnvioResult

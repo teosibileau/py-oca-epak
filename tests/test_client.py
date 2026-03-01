@@ -1437,3 +1437,58 @@ class TestOcaService:
             oca_service.trackingEnvioEstadoActual("INVALID")
 
         assert "Invalid tracking number" in str(exc_info.value)
+
+    # ============================================================
+    # QR CODE GENERATION TESTS
+    # ============================================================
+
+    def test_generate_qr_by_orden_de_retiro_returns_base64(self, oca_service):
+        """Verify generateQrByOrdenDeRetiro returns base64 QR string."""
+        mock_client = oca_service._mock_client
+        mock_response = MagicMock()
+        mock_response.GenerateQrByOrdenDeRetiroResult = "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABHNCSVQICAgIfAhkiAAAAElJREFUOI1j/P///38GMgAxWZgYGRgYnEY1DGJgYGBg+//z/39Uw1AMBwMYGBgYGP7//8+AFQxDMBwMYGBgYGD4//8/AxYwDMBwMYGBgYEBAF/3Jv4i2bNHAAAAAElFTkSuQmCC"
+        mock_client.GenerateQrByOrdenDeRetiro.return_value = mock_response
+
+        result = oca_service.generateQrByOrdenDeRetiro("12345")
+
+        assert isinstance(result, str)
+        assert len(result) > 0
+        mock_client.GenerateQrByOrdenDeRetiro.assert_called_once_with(
+            usr="test_user", psw="test_pass", idOrdenDeRetiro="12345"
+        )
+
+    def test_generate_qr_para_paquetes_returns_base64(self, oca_service):
+        """Verify generateQrParaPaquetes returns base64 QR string."""
+        mock_client = oca_service._mock_client
+        mock_response = MagicMock()
+        mock_response.GenerateQRParaPaquetesResult = "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABHNCSVQICAgIfAhkiAAAAElJREFUOI1j/P///38GMgAxWZgYGRgYnEY1DGJgYGBg+//z/39Uw1AMBwMYGBgYGP7//8+AFQxDMBwMYGBgYGD4//8/AxYwDMBwMYGBgYEBAF/3Jv4i2bNHAAAAAElFTkSuQmCC"
+        mock_client.GenerateQRParaPaquetes.return_value = mock_response
+
+        result = oca_service.generateQrParaPaquetes("987654321", "PKG001")
+
+        assert isinstance(result, str)
+        assert len(result) > 0
+        mock_client.GenerateQRParaPaquetes.assert_called_once_with(
+            usr="test_user",
+            psw="test_pass",
+            numeroDeEnvio="987654321",
+            idpaquete="PKG001",
+        )
+
+    def test_generate_list_qr_por_envio_returns_list(self, oca_service):
+        """Verify generateListQrPorEnvio returns list of base64 QR strings."""
+        mock_client = oca_service._mock_client
+        mock_response = MagicMock()
+        mock_response.GenerateListQrPorEnvioResult = [
+            "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABHNCSVQICAgIfAhkiAAAAElJREFUOI1j/P///38GMgAxWZgYGRgYnEY1DGJgYGBg+//z/39Uw1AMBwMYGBgYGP7//8+AFQxDMBwMYGBgYGD4//8/AxYwDMBwMYGBgYEBAF/3Jv4i2bNHAAAAAElFTkSuQmCC",
+            "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAABHNCSVQICAgIfAhkiAAAAElJREFUOI1j/P///38GMgAxWZgYGRgYnEY1DGJgYGBg+//z/39Uw1AMBwMYGBgYGP7//8+AFQxDMBwMYGBgYGD4//8/AxYwDMBwMYGBgYEBAF/3Jv4i2bNHAAAAAElFTkSuQmCC",
+        ]
+        mock_client.GenerateListQrPorEnvio.return_value = mock_response
+
+        result = oca_service.generateListQrPorEnvio("555666777")
+
+        assert isinstance(result, list)
+        assert len(result) == 2
+        mock_client.GenerateListQrPorEnvio.assert_called_once_with(
+            usr="test_user", psw="test_pass", numeroDeEnvio="555666777"
+        )

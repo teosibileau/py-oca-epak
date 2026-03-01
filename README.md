@@ -511,6 +511,56 @@ result = oca.trackingEnvioEstadoActual(numero_envio)
 ```
 </details>
 
+<details>
+<summary><strong>generateQrByOrdenDeRetiro</strong> - Generate QR by pickup order</summary>
+
+Generate a base64 encoded QR code string for a specific pickup order.
+
+```python
+id_orden_retiro = "12345"
+qr_base64 = oca.generateQrByOrdenDeRetiro(id_orden_retiro)
+```
+
+**Parameters:**
+- `id_orden_retiro` (str): Pickup order ID
+
+**Returns:** Base64 encoded QR code string
+</details>
+
+<details>
+<summary><strong>generateQrParaPaquetes</strong> - Generate QR for package</summary>
+
+Generate a base64 encoded QR code string for a specific package within a shipment.
+
+```python
+numero_envio = "987654321"
+id_paquete = "PKG001"
+qr_base64 = oca.generateQrParaPaquetes(numero_envio, id_paquete)
+```
+
+**Parameters:**
+- `numero_envio` (str): Shipment/tracking number
+- `id_paquete` (str): Package ID
+
+**Returns:** Base64 encoded QR code string
+</details>
+
+<details>
+<summary><strong>generateListQrPorEnvio</strong> - Generate QR codes for shipment</summary>
+
+Generate a list of base64 encoded QR code strings for all packages within a shipment.
+
+```python
+numero_envio = "555666777"
+qr_list = oca.generateListQrPorEnvio(numero_envio)
+```
+
+**Parameters:**
+- `numero_envio` (str): Shipment/tracking number
+
+**Returns:** List of base64 encoded QR code strings
+</details>
+
 ## Response Parsing
 
 The client includes two static methods for parsing XML responses:
