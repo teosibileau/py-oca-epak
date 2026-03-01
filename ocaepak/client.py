@@ -184,10 +184,12 @@ class OcaService:
         return self.iterateresult("Tracking_PiezaResult", soap_response)
 
     def getProvincias(self):
-        """Get list of provinces."""
-        soap_response = self.client.GetProvincias()
-        xml_content = soap_response.GetProvinciasResult
-        return self.parse_list_result(xml_content, "Provincia")
+        """Get list of provinces with caching."""
+        if not hasattr(self, "_provincias_cache"):
+            soap_response = self.client.GetProvincias()
+            xml_content = soap_response.GetProvinciasResult
+            self._provincias_cache = self.parse_list_result(xml_content, "Provincia")
+        return self._provincias_cache
 
     def centrosDeImposicionAdmision(self):
         """Get all admission centers for package drop-off."""
@@ -206,11 +208,28 @@ class OcaService:
         )
 
     def getLocalidadesByProvincia(self, id_provincia):
-        """Get all localities for a given province.
+        """Get all localities for a given province with caching.
 
         Args:
             id_provincia: Province ID to search localities for
         """
-        soap_response = self.client.GetLocalidadesByProvincia(idProvincia=id_provincia)
-        xml_content = soap_response.GetLocalidadesByProvinciaResult
-        return self.parse_list_result(xml_content, "Provincia")
+        if not hasattr(self, "_localidades_cache"):
+            self._localidades_cache = {}
+
+        if id_provincia not in self._localidades_cache:
+            soap_response = self.client.GetLocalidadesByProvincia(
+                idProvincia=id_provincia
+            )
+            xml_content = soap_response.GetLocalidadesByProvinciaResult
+            self._localidades_cache[id_provincia] = self.parse_list_result(
+                xml_content, "Provincia"
+            )
+
+        return self._localidades_cache[id_provincia]
+
+    def clear_cache(self):
+        """Clear cached province and localities data."""
+        if hasattr(self, "_provincias_cache"):
+            delattr(self, "_provincias_cache")
+        if hasattr(self, "_localidades_cache"):
+            delattr(self, "_localidades_cache")
