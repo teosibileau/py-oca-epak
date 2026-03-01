@@ -22,6 +22,7 @@ class OcaService:
         "idTipoSercicio",
         "PlazoEntrega",
         "Tarifador",
+        "IDLocker",
     ]
     LABELS_FOR_FLOATS = ["Precio", "Adicional", "Total"]
     LABELS_FOR_DATETIMES = ["fecha"]
@@ -306,4 +307,46 @@ class OcaService:
         """
         soap_response = self.client.GetServiciosDeCentrosImposicion()
         xml_content = soap_response.GetServiciosDeCentrosImposicionResult
+        return self.parse_nested_list_result(xml_content, "Centro", "Servicio")
+
+    def getELockerOCA(self):
+        """Get all available OCA eLockers (Smart Lockers).
+
+        Returns a list of available OCA eLockers (smart locker locations)
+        with their addresses and identification codes.
+
+        Returns:
+            List of dictionaries containing locker information:
+            - IDLocker: Locker ID
+            - Sigla: Locker code
+            - Descripcion: Description
+            - Calle: Street address
+            - Numero: Street number
+            - Piso: Floor (if applicable)
+            - Localidad: City
+            - Provincia: Province
+            - CodigoPostal: Postal code
+        """
+        soap_response = self.client.GetELockerOCA()
+        return self.iterateresult("GetELockerOCAResult", soap_response)
+
+    def getServiciosDeCentrosImposicionPorProvincia(self, provincia_id, localidad=""):
+        """Get services by center filtered by province and locality.
+
+        Similar to getServiciosDeCentrosImposicion but allows filtering
+        by province ID and optionally by locality name.
+
+        Args:
+            provincia_id (int): Province ID to filter by
+            localidad (str, optional): Locality/city name to filter by.
+                                      Defaults to empty string (no filter).
+
+        Returns:
+            List of dictionaries containing center information with services,
+            filtered by province and optionally locality.
+        """
+        soap_response = self.client.GetServiciosDeCentrosImposicion_xProvincia(
+            provinciaID=provincia_id, localidad=localidad
+        )
+        xml_content = soap_response.GetServiciosDeCentrosImposicion_xProvinciaResult
         return self.parse_nested_list_result(xml_content, "Centro", "Servicio")

@@ -217,6 +217,54 @@ result = oca.getServiciosDeCentrosImposicion()
 </details>
 
 <details>
+<summary><strong>getELockerOCA</strong> - Get available eLockers</summary>
+
+Retrieve all available OCA eLockers (Smart Lockers) with their locations and identification codes.
+
+```python
+result = oca.getELockerOCA()
+```
+
+**Returns:** List of dictionaries with eLocker information:
+```python
+[
+    {
+        'IDLocker': 5199,
+        'Sigla': b'62A',
+        'Descripcion': b'SmartLocker OCA - ParkingCity',
+        'Calle': b'Maipu',
+        'Numero': b'119',
+        'Piso': None,
+        'Localidad': b'ALBERDI',
+        'Provincia': b'CORDOBA',
+        'CodigoPostal': b'5000'
+    },
+    # ... more lockers
+]
+```
+</details>
+
+<details>
+<summary><strong>getServiciosDeCentrosImposicionPorProvincia</strong> - Get services by province</summary>
+
+Retrieve pickup centers and their services filtered by province and optionally by locality. Similar to getServiciosDeCentrosImposicion but with filtering capabilities.
+
+```python
+# Get all centers in Buenos Aires (province ID 2)
+result = oca.getServiciosDeCentrosImposicionPorProvincia(2)
+
+# Get centers in a specific city
+result = oca.getServiciosDeCentrosImposicionPorProvincia(2, "LA PLATA")
+```
+
+**Parameters:**
+- `provincia_id` (int): Province ID to filter by
+- `localidad` (str, optional): Locality/city name to filter by. Defaults to empty string (all localities).
+
+**Returns:** List of dictionaries with center information and services (same structure as getServiciosDeCentrosImposicion)
+</details>
+
+<details>
 <summary><strong>ingresarOR</strong> - Create pickup order</summary>
 
 Create a new pickup order (Orden de Retiro) for package collection.

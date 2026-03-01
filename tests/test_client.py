@@ -173,6 +173,7 @@ class TestOcaService:
             "idTipoSercicio",
             "PlazoEntrega",
             "Tarifador",
+            "IDLocker",
         ]
         assert OcaService.LABELS_FOR_INTEGERS == expected
 
@@ -1267,3 +1268,103 @@ class TestOcaService:
         assert len(result) == 2
         assert result[0]["Id"] == "1"
         assert result[1]["Name"] == "Test 2"
+
+    # ============================================================
+    # ELOCKER TESTS
+    # ============================================================
+
+    def test_get_elocker_oca_returns_list(self, oca_service):
+        """Verify getELockerOCA returns list of eLockers."""
+        mock_client = oca_service._mock_client
+
+        # Setup mock for iterateresult (DataSet with Table elements)
+        mock_result = MagicMock()
+        inner_mock = MagicMock()
+        inner_mock.as_xml.return_value = """<?xml version="1.0" encoding="utf-8"?>
+        <DataSet>
+            <Table>
+                <IDLocker>5199</IDLocker>
+                <Sigla>62A</Sigla>
+                <Descripcion>SmartLocker OCA - ParkingCity</Descripcion>
+                <Calle>Maipu</Calle>
+                <Numero>119</Numero>
+                <Localidad>ALBERDI</Localidad>
+                <Provincia>CORDOBA</Provincia>
+                <CodigoPostal>5000</CodigoPostal>
+            </Table>
+        </DataSet>"""
+        mock_result.__getitem__.return_value = inner_mock
+        mock_client.GetELockerOCA.return_value = mock_result
+
+        result = oca_service.getELockerOCA()
+
+        assert len(result) == 1
+        assert result[0]["IDLocker"] == 5199
+        assert result[0]["Sigla"] == b"62A"
+        assert result[0]["Descripcion"] == b"SmartLocker OCA - ParkingCity"
+
+    def test_get_elocker_oca_calls_correct_soap_method(self, oca_service):
+        """Verify getELockerOCA calls correct SOAP method."""
+        mock_client = oca_service._mock_client
+        mock_result = MagicMock()
+        inner_mock = MagicMock()
+        inner_mock.as_xml.return_value = "<DataSet></DataSet>"
+        mock_result.__getitem__.return_value = inner_mock
+        mock_client.GetELockerOCA.return_value = mock_result
+
+        oca_service.getELockerOCA()
+
+        mock_client.GetELockerOCA.assert_called_once_with()
+
+    # ============================================================
+    # SERVICES BY PROVINCE TESTS
+    # ============================================================
+
+    def test_get_servicios_por_provincia_returns_filtered_list(self, oca_service):
+        """Verify getServiciosDeCentrosImposicionPorProvincia returns filtered centers."""
+        mock_client = oca_service._mock_client
+        xml_response = """<?xml version="1.0" encoding="utf-8"?>
+        <CentrosDeImposicion>
+            <Centro>
+                <IdCentroImposicion>9</IdCentroImposicion>
+                <Calle>VIAMONTE</Calle>
+                <Localidad>CAPITAL FEDERAL</Localidad>
+                <Provincia>CAPITAL FEDERAL</Provincia>
+                <Servicios>
+                    <Servicio>
+                        <IdTipoServicio>1</IdTipoServicio>
+                        <ServicioDesc>Admisión de paquetes</ServicioDesc>
+                    </Servicio>
+                </Servicios>
+            </Centro>
+        </CentrosDeImposicion>"""
+        mock_response = MagicMock()
+        mock_response.GetServiciosDeCentrosImposicion_xProvinciaResult = xml_response
+        mock_client.GetServiciosDeCentrosImposicion_xProvincia.return_value = (
+            mock_response
+        )
+
+        result = oca_service.getServiciosDeCentrosImposicionPorProvincia(
+            1, "CAPITAL FEDERAL"
+        )
+
+        assert len(result) == 1
+        assert result[0]["IdCentroImposicion"] == "9"
+        assert "Servicios" in result[0]
+
+    def test_get_servicios_por_provincia_calls_with_params(self, oca_service):
+        """Verify getServiciosDeCentrosImposicionPorProvincia passes correct parameters."""
+        mock_client = oca_service._mock_client
+        mock_response = MagicMock()
+        mock_response.GetServiciosDeCentrosImposicion_xProvinciaResult = (
+            "<CentrosDeImposicion></CentrosDeImposicion>"
+        )
+        mock_client.GetServiciosDeCentrosImposicion_xProvincia.return_value = (
+            mock_response
+        )
+
+        oca_service.getServiciosDeCentrosImposicionPorProvincia(2, "CORDOBA")
+
+        mock_client.GetServiciosDeCentrosImposicion_xProvincia.assert_called_once_with(
+            provinciaID=2, localidad="CORDOBA"
+        )
