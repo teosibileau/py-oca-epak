@@ -454,3 +454,232 @@ class OcaService:
                 "CantidadDeOrdenes": int(parts[1]) if len(parts) > 1 else 0,
             }
         return {"IdDeConsolidacion": result_str, "CantidadDeOrdenes": 0}
+
+    # ============================================================
+    # LABEL METHODS
+    # ============================================================
+
+    def getCSSDeEtiquetasPorOrdenOrNumeroEnvio(self, para_etiquetadora=False):
+        """Get CSS styles for labels.
+
+        Obtains the CSS styles for the base HTML code of labels
+        belonging to a pickup order.
+
+        Args:
+            para_etiquetadora (bool): Whether the CSS is for a label printer
+
+        Returns:
+            str: CSS styles as a string
+        """
+        soap_response = self.client.GetCSSDeEtiquetasPorOrdenOrNumeroEnvio(
+            paraEtiquetadora=para_etiquetadora
+        )
+        return soap_response.GetCSSDeEtiquetasPorOrdenOrNumeroEnvioResult
+
+    def getDatosDeEtiquetasPorOrdenOrNumeroEnvio(
+        self, id_orden_retiro, nro_envio=None, is_locker=False
+    ):
+        """Get label data for a pickup order or shipment.
+
+        Obtains the source code of labels belonging to a pickup order
+        or shipment number.
+
+        Args:
+            id_orden_retiro (int): Pickup order ID (required)
+            nro_envio (str, optional): Shipment number
+            is_locker (bool): Whether it's a locker delivery
+
+        Returns:
+            list: List of dictionaries with label data (Etiqueta objects)
+        """
+        soap_response = self.client.GetDatosDeEtiquetasPorOrdenOrNumeroEnvio(
+            idOrdenRetiro=id_orden_retiro,
+            nroEnvio=nro_envio if nro_envio else "",
+            isLocker=is_locker,
+        )
+        # Parse the Etiqueta elements from the response
+        xml_content = soap_response.GetDatosDeEtiquetasPorOrdenOrNumeroEnvioResult
+        return self.parse_nested_list_result(xml_content, "Etiqueta")
+
+    def getDivDeEtiquetaByIdPieza(self, id_pieza):
+        """Get HTML div for a label by piece ID.
+
+        Obtains the HTML div element for a label identified by piece ID.
+
+        Args:
+            id_pieza (str): Piece ID
+
+        Returns:
+            str: HTML div as a string
+        """
+        soap_response = self.client.GetDivDeEtiquetaByIdPieza(idPieza=id_pieza)
+        return soap_response.GetDivDeEtiquetaByIdPiezaResult
+
+    def getDivDeEtiquetasPorOrdenOrNumeroEnvio(self, id_orden_retiro, nro_envio=None):
+        """Get HTML divs for labels by order or shipment.
+
+        Obtains the HTML div elements for labels belonging to a pickup
+        order or shipment number.
+
+        Args:
+            id_orden_retiro (int): Pickup order ID
+            nro_envio (str, optional): Shipment number
+
+        Returns:
+            str: HTML divs as a string
+        """
+        soap_response = self.client.GetDivDeEtiquetasPorOrdenOrNumeroEnvio(
+            idOrdenRetiro=id_orden_retiro, nroEnvio=nro_envio if nro_envio else ""
+        )
+        return soap_response.GetDivDeEtiquetasPorOrdenOrNumeroEnvioResult
+
+    def getHtmlDeEtiquetasPorOrdenOrNumeroEnvio(self, id_orden_retiro, nro_envio=None):
+        """Get full HTML for labels by order or shipment.
+
+        Obtains the complete HTML source code for labels belonging to
+        a pickup order or shipment number.
+
+        Args:
+            id_orden_retiro (int): Pickup order ID (required)
+            nro_envio (str, optional): Shipment number
+
+        Returns:
+            str: Complete HTML as a string
+        """
+        soap_response = self.client.GetHtmlDeEtiquetasPorOrdenOrNumeroEnvio(
+            idOrdenRetiro=id_orden_retiro, nroEnvio=nro_envio if nro_envio else ""
+        )
+        return soap_response.GetHtmlDeEtiquetasPorOrdenOrNumeroEnvioResult
+
+    def getHtmlDeEtiquetasPorOrdenOrNumeroEnvioParaEtiquetadora(
+        self, id_orden_retiro, nro_envio=None
+    ):
+        """Get HTML for labels formatted for label printer.
+
+        Obtains the HTML source code for labels formatted specifically
+        for label printers.
+
+        Args:
+            id_orden_retiro (int): Pickup order ID (required)
+            nro_envio (str, optional): Shipment number
+
+        Returns:
+            str: HTML formatted for label printer as a string
+        """
+        soap_response = (
+            self.client.GetHtmlDeEtiquetasPorOrdenOrNumeroEnvioParaEtiquetadora(
+                idOrdenRetiro=id_orden_retiro,
+                nroEnvio=nro_envio if nro_envio else "",
+            )
+        )
+        return (
+            soap_response.GetHtmlDeEtiquetasPorOrdenOrNumeroEnvioParaEtiquetadoraResult
+        )
+
+    def getHtmlDeEtiquetasPorOrdenes(self, id_ordenes):
+        """Get HTML for labels from multiple orders.
+
+        Obtains the HTML source code for labels from multiple pickup orders.
+
+        Args:
+            id_ordenes (list): List of pickup order IDs
+
+        Returns:
+            str: HTML as a string
+        """
+        # Convert list to comma-separated string
+        ordenes_str = ",".join(str(o) for o in id_ordenes)
+        soap_response = self.client.GetHtmlDeEtiquetasPorOrdenes(idOrdenes=ordenes_str)
+        return soap_response.GetHtmlDeEtiquetasPorOrdenesResult
+
+    def getPdfDeEtiquetasPorOrdenOrNumeroEnvio(
+        self, id_orden_retiro, nro_envio=None, logistica_inversa=False
+    ):
+        """Get PDF for labels by order or shipment.
+
+        Obtains a PDF containing labels belonging to a pickup order
+        or shipment number.
+
+        Args:
+            id_orden_retiro (int): Pickup order ID (required)
+            nro_envio (str, optional): Shipment number
+            logistica_inversa (bool): Whether it's reverse logistics
+
+        Returns:
+            str: Base64 encoded PDF as a string
+        """
+        soap_response = self.client.GetPdfDeEtiquetasPorOrdenOrNumeroEnvio(
+            idOrdenRetiro=id_orden_retiro,
+            nroEnvio=nro_envio if nro_envio else "",
+            logisticaInversa=logistica_inversa,
+        )
+        return soap_response.GetPdfDeEtiquetasPorOrdenOrNumeroEnvioResult
+
+    def getPdfDeEtiquetasPorOrdenOrNumeroEnvioAdidas(
+        self, id_orden_retiro, nro_envio=None
+    ):
+        """Get Adidas-specific PDF for labels.
+
+        Obtains an Adidas-specific PDF containing labels belonging to
+        a pickup order or shipment number.
+
+        Args:
+            id_orden_retiro (int): Pickup order ID (required)
+            nro_envio (str, optional): Shipment number
+
+        Returns:
+            str: Base64 encoded PDF as a string
+        """
+        soap_response = self.client.GetPdfDeEtiquetasPorOrdenOrNumeroEnvioAdidas(
+            idOrdenRetiro=id_orden_retiro, nroEnvio=nro_envio if nro_envio else ""
+        )
+        return soap_response.GetPdfDeEtiquetasPorOrdenOrNumeroEnvioAdidasResult
+
+    def getPdfDeEtiquetasPorOrdenOrNumeroEnvioParaEtiquetadora(
+        self, id_orden_retiro, nro_envio=None
+    ):
+        """Get PDF for labels formatted for label printer.
+
+        Obtains a PDF containing labels formatted specifically for
+        label printers.
+
+        Args:
+            id_orden_retiro (int): Pickup order ID (required)
+            nro_envio (str, optional): Shipment number
+
+        Returns:
+            str: Base64 encoded PDF as a string
+        """
+        soap_response = (
+            self.client.GetPdfDeEtiquetasPorOrdenOrNumeroEnvioParaEtiquetadora(
+                idOrdenRetiro=id_orden_retiro,
+                nroEnvio=nro_envio if nro_envio else "",
+            )
+        )
+        return (
+            soap_response.GetPdfDeEtiquetasPorOrdenOrNumeroEnvioParaEtiquetadoraResult
+        )
+
+    def obtenerEtiquetasZPL(
+        self, orden_retiro=None, numero_envio=None, numero_bulto=None
+    ):
+        """Get ZPL code for labels.
+
+        Obtains ZPL (Zebra Programming Language) code for labels.
+        At least one of orden_retiro or numero_envio must be provided.
+        If numero_bulto is provided, numero_envio is required.
+
+        Args:
+            orden_retiro (str, optional): Pickup order ID
+            numero_envio (str, optional): Shipment number
+            numero_bulto (str, optional): Package number
+
+        Returns:
+            list: List of ZPL code strings
+        """
+        soap_response = self.client.ObtenerEtiquetasZPL(
+            ordenRetiro=orden_retiro if orden_retiro else "",
+            numeroEnvio=numero_envio if numero_envio else "",
+            numeroBulto=numero_bulto if numero_bulto else "",
+        )
+        return soap_response.ObtenerEtiquetasZPLResult

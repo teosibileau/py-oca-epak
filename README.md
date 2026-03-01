@@ -583,6 +583,212 @@ result = oca.generarConsolidacionDeOrdenesDeRetiro(ordenes)
 ```
 </details>
 
+<details>
+<summary><strong>getCSSDeEtiquetasPorOrdenOrNumeroEnvio</strong> - Get label CSS styles</summary>
+
+Obtains the CSS styles for the base HTML code of labels belonging to a pickup order.
+
+```python
+css = oca.getCSSDeEtiquetasPorOrdenOrNumeroEnvio(para_etiquetadora=True)
+```
+
+**Parameters:**
+- `para_etiquetadora` (bool, optional): Whether the CSS is for a label printer. Defaults to False.
+
+**Returns:** CSS styles as a string
+</details>
+
+<details>
+<summary><strong>getDatosDeEtiquetasPorOrdenOrNumeroEnvio</strong> - Get label data</summary>
+
+Obtains the source code of labels belonging to a pickup order or shipment number. Returns structured data for each label.
+
+```python
+labels = oca.getDatosDeEtiquetasPorOrdenOrNumeroEnvio(
+    id_orden_retiro=12345,
+    nro_envio="987654321",
+    is_locker=False
+)
+```
+
+**Parameters:**
+- `id_orden_retiro` (int): Pickup order ID (required)
+- `nro_envio` (str, optional): Shipment number
+- `is_locker` (bool): Whether it's a locker delivery. Defaults to False.
+
+**Returns:** List of dictionaries with label data including:
+- NroOrden, NroGuia, DocCliente, Servicio
+- Destinatario, Domicilio, Telefono
+- QR, CodeBar, and more
+</details>
+
+<details>
+<summary><strong>getDivDeEtiquetaByIdPieza</strong> - Get label div by piece ID</summary>
+
+Obtains the HTML div element for a label identified by piece ID.
+
+```python
+div_html = oca.getDivDeEtiquetaByIdPieza("PIEZA001")
+```
+
+**Parameters:**
+- `id_pieza` (str): Piece ID
+
+**Returns:** HTML div as a string
+</details>
+
+<details>
+<summary><strong>getDivDeEtiquetasPorOrdenOrNumeroEnvio</strong> - Get label divs by order</summary>
+
+Obtains the HTML div elements for labels belonging to a pickup order or shipment number.
+
+```python
+divs_html = oca.getDivDeEtiquetasPorOrdenOrNumeroEnvio(
+    id_orden_retiro=12345,
+    nro_envio="987654321"
+)
+```
+
+**Parameters:**
+- `id_orden_retiro` (int): Pickup order ID
+- `nro_envio` (str, optional): Shipment number
+
+**Returns:** HTML divs as a string
+</details>
+
+<details>
+<summary><strong>getHtmlDeEtiquetasPorOrdenOrNumeroEnvio</strong> - Get full label HTML</summary>
+
+Obtains the complete HTML source code for labels belonging to a pickup order or shipment number.
+
+```python
+html = oca.getHtmlDeEtiquetasPorOrdenOrNumeroEnvio(
+    id_orden_retiro=12345,
+    nro_envio="987654321"
+)
+```
+
+**Parameters:**
+- `id_orden_retiro` (int): Pickup order ID (required)
+- `nro_envio` (str, optional): Shipment number
+
+**Returns:** Complete HTML as a string
+</details>
+
+<details>
+<summary><strong>getHtmlDeEtiquetasPorOrdenOrNumeroEnvioParaEtiquetadora</strong> - Get printer HTML</summary>
+
+Obtains the HTML source code for labels formatted specifically for label printers.
+
+```python
+printer_html = oca.getHtmlDeEtiquetasPorOrdenOrNumeroEnvioParaEtiquetadora(
+    id_orden_retiro=12345,
+    nro_envio="987654321"
+)
+```
+
+**Parameters:**
+- `id_orden_retiro` (int): Pickup order ID (required)
+- `nro_envio` (str, optional): Shipment number
+
+**Returns:** HTML formatted for label printer as a string
+</details>
+
+<details>
+<summary><strong>getHtmlDeEtiquetasPorOrdenes</strong> - Get HTML for multiple orders</summary>
+
+Obtains the HTML source code for labels from multiple pickup orders.
+
+```python
+html = oca.getHtmlDeEtiquetasPorOrdenes([12345, 12346, 12347])
+```
+
+**Parameters:**
+- `id_ordenes` (list): List of pickup order IDs
+
+**Returns:** HTML as a string
+</details>
+
+<details>
+<summary><strong>getPdfDeEtiquetasPorOrdenOrNumeroEnvio</strong> - Get label PDF</summary>
+
+Obtains a PDF containing labels belonging to a pickup order or shipment number.
+
+```python
+pdf_base64 = oca.getPdfDeEtiquetasPorOrdenOrNumeroEnvio(
+    id_orden_retiro=12345,
+    nro_envio="987654321",
+    logistica_inversa=False
+)
+```
+
+**Parameters:**
+- `id_orden_retiro` (int): Pickup order ID (required)
+- `nro_envio` (str, optional): Shipment number
+- `logistica_inversa` (bool, optional): Whether it's reverse logistics. Defaults to False.
+
+**Returns:** Base64 encoded PDF as a string
+</details>
+
+<details>
+<summary><strong>getPdfDeEtiquetasPorOrdenOrNumeroEnvioAdidas</strong> - Get Adidas PDF</summary>
+
+Obtains an Adidas-specific PDF containing labels belonging to a pickup order or shipment number.
+
+```python
+adidas_pdf = oca.getPdfDeEtiquetasPorOrdenOrNumeroEnvioAdidas(
+    id_orden_retiro=12345,
+    nro_envio="987654321"
+)
+```
+
+**Parameters:**
+- `id_orden_retiro` (int): Pickup order ID (required)
+- `nro_envio` (str, optional): Shipment number
+
+**Returns:** Base64 encoded PDF as a string
+</details>
+
+<details>
+<summary><strong>getPdfDeEtiquetasPorOrdenOrNumeroEnvioParaEtiquetadora</strong> - Get printer PDF</summary>
+
+Obtains a PDF containing labels formatted specifically for label printers.
+
+```python
+printer_pdf = oca.getPdfDeEtiquetasPorOrdenOrNumeroEnvioParaEtiquetadora(
+    id_orden_retiro=12345,
+    nro_envio="987654321"
+)
+```
+
+**Parameters:**
+- `id_orden_retiro` (int): Pickup order ID (required)
+- `nro_envio` (str, optional): Shipment number
+
+**Returns:** Base64 encoded PDF as a string
+</details>
+
+<details>
+<summary><strong>obtenerEtiquetasZPL</strong> - Get ZPL label code</summary>
+
+Obtains ZPL (Zebra Programming Language) code for labels. At least one of orden_retiro or numero_envio must be provided.
+
+```python
+zpl_codes = oca.obtenerEtiquetasZPL(
+    orden_retiro="12345",
+    numero_envio="987654321",
+    numero_bulto="1"
+)
+```
+
+**Parameters:**
+- `orden_retiro` (str, optional): Pickup order ID
+- `numero_envio` (str, optional): Shipment number
+- `numero_bulto` (str, optional): Package number (requires numero_envio if provided)
+
+**Returns:** List of ZPL code strings
+</details>
+
 ## Response Parsing
 
 The client includes two static methods for parsing XML responses:
