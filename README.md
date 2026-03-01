@@ -485,6 +485,32 @@ result = oca.trackingPiezaConDNICUIT(nro_documento, cuit)
 **Returns:** List of dictionaries with tracking information for all matching packages
 </details>
 
+<details>
+<summary><strong>trackingEnvioEstadoActual</strong> - Track shipment current status</summary>
+
+Get the current status of a shipment with branch position information. This method returns the shipment data with the current status and the global position of the branch where the package is currently located.
+
+```python
+numero_envio = "123456789"
+result = oca.trackingEnvioEstadoActual(numero_envio)
+```
+
+**Parameters:**
+- `numero_envio` (str): Shipment/tracking number
+
+**Returns:** List of dictionaries with current tracking information:
+```python
+[
+    {
+        'NumeroEnvio': 123456789,
+        'Estado': b'En transito',
+        'Sucursal': b'BUENOS AIRES',
+        'Fecha': datetime(2024, 1, 15, 10, 30)
+    }
+]
+```
+</details>
+
 ## Response Parsing
 
 The client includes two static methods for parsing XML responses:

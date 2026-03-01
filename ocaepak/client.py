@@ -23,6 +23,7 @@ class OcaService:
         "PlazoEntrega",
         "Tarifador",
         "IDLocker",
+        "NumeroEnvio",
     ]
     LABELS_FOR_FLOATS = ["Precio", "Adicional", "Total"]
     LABELS_FOR_DATETIMES = ["fecha"]
@@ -350,3 +351,21 @@ class OcaService:
         )
         xml_content = soap_response.GetServiciosDeCentrosImposicion_xProvinciaResult
         return self.parse_nested_list_result(xml_content, "Centro", "Servicio")
+
+    def trackingEnvioEstadoActual(self, numero_envio):
+        """Get current shipment status with branch position.
+
+        Returns shipment data with the current status and the global
+        position of the branch where the package is currently located.
+
+        Args:
+            numero_envio (str): Shipment/tracking number
+
+        Returns:
+            List of dictionaries with current tracking information including:
+            - Current status of the shipment
+            - Branch position information
+            - Location details
+        """
+        soap_response = self.client.TrackingEnvio_EstadoActual(numeroEnvio=numero_envio)
+        return self.iterateresult("TrackingEnvio_EstadoActualResult", soap_response)
