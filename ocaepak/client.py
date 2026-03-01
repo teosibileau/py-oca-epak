@@ -424,3 +424,33 @@ class OcaService:
             usr=self.user, psw=self.password, numeroDeEnvio=numero_envio
         )
         return soap_response.GenerateListQrPorEnvioResult
+
+    def generarConsolidacionDeOrdenesDeRetiro(self, ordenes):
+        """Consolidate multiple pickup orders into one.
+
+        This method consolidates multiple pickup orders (Ordenes de Retiro)
+        into a single consolidated order. It returns the consolidation ID
+        and the count of orders that were included.
+
+        Args:
+            ordenes (list): List of pickup order IDs to consolidate
+
+        Returns:
+            dict: Dictionary containing:
+                - IdDeConsolidacion: Consolidation ID
+                - CantidadDeOrdenes: Number of orders consolidated
+        """
+        # Convert list to comma-separated string
+        ordenes_str = ",".join(str(o) for o in ordenes)
+        soap_response = self.client.GenerarConsolidacionDeOrdenesDeRetiro(
+            usr=self.user, psw=self.password, ordenesDeRetiro=ordenes_str
+        )
+        # Parse the response which is in format "IdDeConsolidacion|CantidadDeOrdenes"
+        result_str = soap_response.GenerarConsolidacionDeOrdenesDeRetiroResult
+        if result_str and "|" in result_str:
+            parts = result_str.split("|")
+            return {
+                "IdDeConsolidacion": parts[0],
+                "CantidadDeOrdenes": int(parts[1]) if len(parts) > 1 else 0,
+            }
+        return {"IdDeConsolidacion": result_str, "CantidadDeOrdenes": 0}

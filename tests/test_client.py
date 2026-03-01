@@ -1492,3 +1492,49 @@ class TestOcaService:
         mock_client.GenerateListQrPorEnvio.assert_called_once_with(
             usr="test_user", psw="test_pass", numeroDeEnvio="555666777"
         )
+
+    # ============================================================
+    # CONSOLIDACION DE ORDENES TESTS
+    # ============================================================
+
+    def test_generar_consolidacion_de_ordenes_returns_dict(self, oca_service):
+        """Verify generarConsolidacionDeOrdenesDeRetiro returns parsed result."""
+        mock_client = oca_service._mock_client
+        mock_response = MagicMock()
+        mock_response.GenerarConsolidacionDeOrdenesDeRetiroResult = "CONS123|3"
+        mock_client.GenerarConsolidacionDeOrdenesDeRetiro.return_value = mock_response
+
+        result = oca_service.generarConsolidacionDeOrdenesDeRetiro(
+            ["123", "456", "789"]
+        )
+
+        assert isinstance(result, dict)
+        assert result["IdDeConsolidacion"] == "CONS123"
+        assert result["CantidadDeOrdenes"] == 3
+        mock_client.GenerarConsolidacionDeOrdenesDeRetiro.assert_called_once_with(
+            usr="test_user", psw="test_pass", ordenesDeRetiro="123,456,789"
+        )
+
+    def test_generar_consolidacion_single_order(self, oca_service):
+        """Verify consolidation works with single order."""
+        mock_client = oca_service._mock_client
+        mock_response = MagicMock()
+        mock_response.GenerarConsolidacionDeOrdenesDeRetiroResult = "CONS456|1"
+        mock_client.GenerarConsolidacionDeOrdenesDeRetiro.return_value = mock_response
+
+        result = oca_service.generarConsolidacionDeOrdenesDeRetiro(["999"])
+
+        assert result["IdDeConsolidacion"] == "CONS456"
+        assert result["CantidadDeOrdenes"] == 1
+
+    def test_generar_consolidacion_empty_response(self, oca_service):
+        """Verify consolidation handles empty/invalid response."""
+        mock_client = oca_service._mock_client
+        mock_response = MagicMock()
+        mock_response.GenerarConsolidacionDeOrdenesDeRetiroResult = ""
+        mock_client.GenerarConsolidacionDeOrdenesDeRetiro.return_value = mock_response
+
+        result = oca_service.generarConsolidacionDeOrdenesDeRetiro(["111"])
+
+        assert result["IdDeConsolidacion"] == ""
+        assert result["CantidadDeOrdenes"] == 0

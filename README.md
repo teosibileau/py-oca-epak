@@ -561,6 +561,28 @@ qr_list = oca.generateListQrPorEnvio(numero_envio)
 **Returns:** List of base64 encoded QR code strings
 </details>
 
+<details>
+<summary><strong>generarConsolidacionDeOrdenesDeRetiro</strong> - Consolidate pickup orders</summary>
+
+Consolidate multiple pickup orders (Ordenes de Retiro) into a single consolidated order. This is useful when you have multiple pickup orders that should be processed together.
+
+```python
+ordenes = ["12345", "12346", "12347"]
+result = oca.generarConsolidacionDeOrdenesDeRetiro(ordenes)
+```
+
+**Parameters:**
+- `ordenes` (list): List of pickup order IDs to consolidate
+
+**Returns:** Dictionary with consolidation information:
+```python
+{
+    'IdDeConsolidacion': 'CONS123',
+    'CantidadDeOrdenes': 3
+}
+```
+</details>
+
 ## Response Parsing
 
 The client includes two static methods for parsing XML responses:
