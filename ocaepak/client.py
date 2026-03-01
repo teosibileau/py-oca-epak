@@ -12,7 +12,7 @@ ROOT = os.path.dirname(os.path.realpath(__file__))
 logger = logging.getLogger(__name__)
 
 
-class OcaService(object):
+class OcaService:
     WSDL_BASE_URI = "http://webservice.oca.com.ar/oep_tracking/Oep_Track.asmx"
     OCA_WDSL = "%s?WSDL" % WSDL_BASE_URI
     LABELS_FOR_INTEGERS = [
@@ -50,9 +50,9 @@ class OcaService(object):
     def iterateresult(cls, id_result, xml_result):
         tree = ET.fromstring(str(xml_result[id_result].as_xml()))
         r = []
-        for node in tree.getiterator("Table"):
+        for node in tree.iter("Table"):
             t = {}
-            for field in node.getiterator():
+            for field in node.iter():
                 if field.tag != "Table" and field.text:
                     value = field.text.strip()
                     if value:
