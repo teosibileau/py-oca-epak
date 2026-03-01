@@ -22,7 +22,6 @@ class OcaService:
         "idTipoSercicio",
         "PlazoEntrega",
         "Tarifador",
-        "idProvincia",
     ]
     LABELS_FOR_FLOATS = ["Precio", "Adicional", "Total"]
     LABELS_FOR_DATETIMES = ["fecha"]
@@ -68,6 +67,27 @@ class OcaService:
                         t[field.tag] = value
             r.append(t)
         return r
+
+    @staticmethod
+    def parse_list_result(xml_string, item_tag):
+        """Parse XML list results (like Provincias, Localidades).
+
+        Args:
+            xml_string: XML content to parse
+            item_tag: Tag name for individual items (e.g., 'Provincia')
+
+        Returns:
+            List of dictionaries with field names as keys
+        """
+        tree = ET.fromstring(xml_string)
+        result = []
+        for item in tree.iter(item_tag):
+            row = {}
+            for field in item:
+                if field.text:
+                    row[field.tag] = field.text.strip()
+            result.append(row)
+        return result
 
     def __init__(self, user, password, cuit, trace=False):
         self.user = user
@@ -166,7 +186,8 @@ class OcaService:
     def getProvincias(self):
         """Get list of provinces."""
         soap_response = self.client.GetProvincias()
-        return self.iterateresult("GetProvinciasResult", soap_response)
+        xml_content = soap_response.GetProvinciasResult
+        return self.parse_list_result(xml_content, "Provincia")
 
     def centrosDeImposicionAdmision(self):
         """Get all admission centers for package drop-off."""
@@ -183,3 +204,13 @@ class OcaService:
         return self.iterateresult(
             "GetCentrosImposicionAdmisionPorCPResult", soap_response
         )
+
+    def getLocalidadesByProvincia(self, id_provincia):
+        """Get all localities for a given province.
+
+        Args:
+            id_provincia: Province ID to search localities for
+        """
+        soap_response = self.client.GetLocalidadesByProvincia(idProvincia=id_provincia)
+        xml_content = soap_response.GetLocalidadesByProvinciaResult
+        return self.parse_list_result(xml_content, "Provincia")
