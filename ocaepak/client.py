@@ -233,3 +233,77 @@ class OcaService:
             delattr(self, "_provincias_cache")
         if hasattr(self, "_localidades_cache"):
             delattr(self, "_localidades_cache")
+
+    @staticmethod
+    def parse_nested_list_result(xml_string, item_tag, nested_tag=None):
+        """Parse XML list results with optional nested elements.
+
+        Args:
+            xml_string: XML content to parse
+            item_tag: Tag name for individual items (e.g., 'Centro')
+            nested_tag: Optional tag name for nested lists (e.g., 'Servicio')
+
+        Returns:
+            List of dictionaries with field names as keys.
+            If nested_tag is provided, nested elements are parsed as lists.
+        """
+        tree = ET.fromstring(xml_string)
+        result = []
+
+        for item in tree.iter(item_tag):
+            row = {}
+            for field in item:
+                # Check for nested elements first (container elements)
+                if nested_tag:
+                    nested_items = list(field.iter(nested_tag))
+                    if nested_items:
+                        # This field contains nested elements - parse them
+                        row[field.tag] = []
+                        for nested_item in nested_items:
+                            nested_row = {}
+                            for nested_field in nested_item:
+                                if nested_field.text and nested_field.text.strip():
+                                    nested_row[nested_field.tag] = (
+                                        nested_field.text.strip()
+                                    )
+                            if nested_row:
+                                row[field.tag].append(nested_row)
+                    elif field.text and field.text.strip():
+                        # Simple text field
+                        row[field.tag] = field.text.strip()
+                elif field.text and field.text.strip():
+                    # No nested tag specified, just parse text fields
+                    row[field.tag] = field.text.strip()
+            result.append(row)
+
+        return result
+
+    def getServiciosDeCentrosImposicion(self):
+        """Get all services for each pickup center.
+
+        Returns a list of centers with their details and available services.
+        Each center includes address, contact info, location coordinates,
+        and a list of services offered at that location.
+
+        Returns:
+            List of dictionaries containing center information:
+            - IdCentroImposicion: Center ID
+            - Calle: Street address
+            - Numero: Street number
+            - Piso: Floor (if applicable)
+            - Depto: Apartment (if applicable)
+            - Localidad: City
+            - Provincia: Province
+            - Telefono: Phone number
+            - Latitud: Latitude coordinate
+            - Longitud: Longitude coordinate
+            - TipoAgencia: Agency type
+            - Sigla: Center code/symbol
+            - Sucursal: Branch name
+            - Servicios: List of services with:
+                - IdTipoServicio: Service type ID
+                - ServicioDesc: Service description
+        """
+        soap_response = self.client.GetServiciosDeCentrosImposicion()
+        xml_content = soap_response.GetServiciosDeCentrosImposicionResult
+        return self.parse_nested_list_result(xml_content, "Centro", "Servicio")

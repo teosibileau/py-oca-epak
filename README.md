@@ -182,6 +182,41 @@ result = oca.getLocalidadesByProvincia(id_provincia)
 </details>
 
 <details>
+<summary><strong>getServiciosDeCentrosImposicion</strong> - Get services by center</summary>
+
+Retrieve all pickup centers with their available services. This includes detailed center information (address, coordinates, contact) and a list of services offered at each location.
+
+```python
+result = oca.getServiciosDeCentrosImposicion()
+```
+
+**Returns:** List of dictionaries with center information:
+```python
+[
+    {
+        'IdCentroImposicion': '2',
+        'Calle': 'BLVD. BUENOS AIRES',
+        'Numero': '1459',
+        'Localidad': 'LUIS GUILLON',
+        'Provincia': 'BUENOS AIRES',
+        'Telefono': '4367-5729',
+        'Latitud': '-34.8098435',
+        'Longitud': '-58.4477191',
+        'TipoAgencia': 'Sucursal OCA',
+        'Sigla': 'ADG',
+        'Sucursal': 'SUCURSAL OCA: LUIS GUILLÓN',
+        'Servicios': [
+            {'IdTipoServicio': '1', 'ServicioDesc': 'Admisión de paquetes'},
+            {'IdTipoServicio': '2', 'ServicioDesc': 'Entrega de paquetes'},
+            {'IdTipoServicio': '3', 'ServicioDesc': 'Venta Estampillas'}
+        ]
+    },
+    # ... more centers
+]
+```
+</details>
+
+<details>
 <summary><strong>ingresarOR</strong> - Create pickup order</summary>
 
 Create a new pickup order (Orden de Retiro) for package collection.
@@ -426,6 +461,24 @@ from ocaepak.client import OcaService
 xml_string = "<Provincias>...</Provincias>"
 result = OcaService.parse_list_result(xml_string, "Provincia")
 ```
+
+### parse_nested_list_result
+Parses XML responses with nested list structures (used by getServiciosDeCentrosImposicion):
+
+```python
+from ocaepak.client import OcaService
+
+# Parse a response with nested elements
+xml_string = "<CentrosDeImposicion>...</CentrosDeImposicion>"
+result = OcaService.parse_nested_list_result(xml_string, "Centro", "Servicio")
+```
+
+**Parameters:**
+- `xml_string` (str): XML content to parse
+- `item_tag` (str): Tag name for individual items (e.g., 'Centro')
+- `nested_tag` (str, optional): Tag name for nested lists (e.g., 'Servicio')
+
+**Returns:** List of dictionaries with field names as keys. If `nested_tag` is provided, nested elements are parsed as lists.
 
 ## License
 

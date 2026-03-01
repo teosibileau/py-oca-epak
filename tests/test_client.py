@@ -1126,3 +1126,144 @@ class TestOcaService:
         # Next call should fetch from API again
         oca_service.getProvincias()
         assert mock_client.GetProvincias.call_count == 2
+
+    # ============================================================
+    # SERVICES BY CENTER TESTS
+    # ============================================================
+
+    def test_get_servicios_de_centros_imposicion_returns_list_with_services(
+        self, oca_service
+    ):
+        """Verify getServiciosDeCentrosImposicion returns centers with services."""
+        mock_client = oca_service._mock_client
+        xml_response = """<?xml version="1.0" encoding="utf-8"?>
+        <CentrosDeImposicion>
+            <Centro>
+                <IdCentroImposicion>2</IdCentroImposicion>
+                <Calle>BLVD. BUENOS AIRES</Calle>
+                <Numero>1459</Numero>
+                <Localidad>LUIS GUILLON</Localidad>
+                <Provincia>BUENOS AIRES</Provincia>
+                <Telefono>4367-5729</Telefono>
+                <Latitud>-34.8098435</Latitud>
+                <Longitud>-58.4477191</Longitud>
+                <TipoAgencia>Sucursal OCA</TipoAgencia>
+                <Sigla>ADG</Sigla>
+                <Sucursal>SUCURSAL OCA: LUIS GUILLÓN</Sucursal>
+                <Servicios>
+                    <Servicio>
+                        <IdTipoServicio>1</IdTipoServicio>
+                        <ServicioDesc>Admisión de paquetes</ServicioDesc>
+                    </Servicio>
+                    <Servicio>
+                        <IdTipoServicio>2</IdTipoServicio>
+                        <ServicioDesc>Entrega de paquetes</ServicioDesc>
+                    </Servicio>
+                </Servicios>
+            </Centro>
+        </CentrosDeImposicion>"""
+        mock_response = MagicMock()
+        mock_response.GetServiciosDeCentrosImposicionResult = xml_response
+        mock_client.GetServiciosDeCentrosImposicion.return_value = mock_response
+
+        result = oca_service.getServiciosDeCentrosImposicion()
+
+        assert len(result) == 1
+        assert result[0]["IdCentroImposicion"] == "2"
+        assert result[0]["Calle"] == "BLVD. BUENOS AIRES"
+        assert result[0]["Localidad"] == "LUIS GUILLON"
+        assert result[0]["Sigla"] == "ADG"
+        assert "Servicios" in result[0]
+        assert len(result[0]["Servicios"]) == 2
+        assert result[0]["Servicios"][0]["IdTipoServicio"] == "1"
+        assert result[0]["Servicios"][0]["ServicioDesc"] == "Admisión de paquetes"
+
+    def test_get_servicios_de_centros_imposicion_calls_correct_soap_method(
+        self, oca_service
+    ):
+        """Verify getServiciosDeCentrosImposicion calls correct SOAP method."""
+        mock_client = oca_service._mock_client
+        mock_response = MagicMock()
+        mock_response.GetServiciosDeCentrosImposicionResult = (
+            "<CentrosDeImposicion></CentrosDeImposicion>"
+        )
+        mock_client.GetServiciosDeCentrosImposicion.return_value = mock_response
+
+        oca_service.getServiciosDeCentrosImposicion()
+
+        mock_client.GetServiciosDeCentrosImposicion.assert_called_once_with()
+
+    def test_get_servicios_de_centros_imposicion_empty_response(self, oca_service):
+        """Verify getServiciosDeCentrosImposicion handles empty response."""
+        mock_client = oca_service._mock_client
+        mock_response = MagicMock()
+        mock_response.GetServiciosDeCentrosImposicionResult = (
+            "<CentrosDeImposicion></CentrosDeImposicion>"
+        )
+        mock_client.GetServiciosDeCentrosImposicion.return_value = mock_response
+
+        result = oca_service.getServiciosDeCentrosImposicion()
+
+        assert result == []
+
+    def test_get_servicios_de_centros_imposicion_soap_error(self, oca_service):
+        """Verify getServiciosDeCentrosImposicion handles SOAP errors."""
+        mock_client = oca_service._mock_client
+        mock_client.GetServiciosDeCentrosImposicion.side_effect = Exception(
+            "SOAP Error"
+        )
+
+        with pytest.raises(Exception) as exc_info:
+            oca_service.getServiciosDeCentrosImposicion()
+
+        assert "SOAP Error" in str(exc_info.value)
+
+    def test_parse_nested_list_result_with_nested_elements(self):
+        """Verify parse_nested_list_result handles nested elements."""
+        xml_string = """<?xml version="1.0" encoding="utf-8"?>
+        <Root>
+            <Item>
+                <Id>1</Id>
+                <Name>Test</Name>
+                <Children>
+                    <Child>
+                        <ChildId>1a</ChildId>
+                        <ChildName>Child 1</ChildName>
+                    </Child>
+                    <Child>
+                        <ChildId>1b</ChildId>
+                        <ChildName>Child 2</ChildName>
+                    </Child>
+                </Children>
+            </Item>
+        </Root>"""
+
+        result = OcaService.parse_nested_list_result(xml_string, "Item", "Child")
+
+        assert len(result) == 1
+        assert result[0]["Id"] == "1"
+        assert result[0]["Name"] == "Test"
+        assert "Children" in result[0]
+        assert len(result[0]["Children"]) == 2
+        assert result[0]["Children"][0]["ChildId"] == "1a"
+        assert result[0]["Children"][1]["ChildName"] == "Child 2"
+
+    def test_parse_nested_list_result_without_nested(self):
+        """Verify parse_nested_list_result works without nested elements."""
+        xml_string = """<?xml version="1.0" encoding="utf-8"?>
+        <Root>
+            <Item>
+                <Id>1</Id>
+                <Name>Test</Name>
+            </Item>
+            <Item>
+                <Id>2</Id>
+                <Name>Test 2</Name>
+            </Item>
+        </Root>"""
+
+        result = OcaService.parse_nested_list_result(xml_string, "Item")
+
+        assert len(result) == 2
+        assert result[0]["Id"] == "1"
+        assert result[1]["Name"] == "Test 2"
