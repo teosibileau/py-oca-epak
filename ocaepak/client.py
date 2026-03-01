@@ -46,8 +46,8 @@ class OcaService:
         3: "14 a 17hs",
     }
 
-    @classmethod
-    def iterateresult(cls, id_result, xml_result):
+    @staticmethod
+    def iterateresult(id_result, xml_result):
         tree = ET.fromstring(str(xml_result[id_result].as_xml()))
         r = []
         for node in tree.iter("Table"):
@@ -80,31 +80,24 @@ class OcaService:
         )
 
     def anularOrdenGenerada(self, orden):
-        return OcaService.iterateresult(
-            "AnularOrdenGeneradaResult",
-            self.client.AnularOrdenGenerada(
-                usuario=self.user, password=self.password, nroOrden=orden
-            ),
+        soap_response = self.client.AnularOrdenGenerada(
+            usuario=self.user, password=self.password, nroOrden=orden
         )
+        return self.iterateresult("AnularOrdenGeneradaResult", soap_response)
 
     def centroCostoPorOperativa(self, operativa):
-        return OcaService.iterateresult(
-            "GetCentroCostorPorOperativaResult",
-            self.client.GetCentroCostorPorOperativa(
-                CUIT=self.CUIT, Operativa=operativa
-            ),
+        soap_response = self.client.GetCentroCostorPorOperativa(
+            CUIT=self.CUIT, Operativa=operativa
         )
+        return self.iterateresult("GetCentroCostorPorOperativaResult", soap_response)
 
     def centrosDeImposicion(self):
-        return OcaService.iterateresult(
-            "GetCentrosImposicionResult", self.client.GetCentrosImposicion()
-        )
+        soap_response = self.client.GetCentrosImposicion()
+        return self.iterateresult("GetCentrosImposicionResult", soap_response)
 
     def centrosDeImposicionPorCP(self, cp):
-        return OcaService.iterateresult(
-            "GetCentrosImposicionPorCPResult",
-            self.client.GetCentrosImposicionPorCP(CodigoPostal=cp),
-        )
+        soap_response = self.client.GetCentrosImposicionPorCP(CodigoPostal=cp)
+        return self.iterateresult("GetCentrosImposicionPorCPResult", soap_response)
 
     def ingresarOR(self, compra, dias_retiro, franja_horaria, confirmar_retiro=False):
         t_file = open(os.path.join(ROOT, "templates", "retiro.xml"))
@@ -123,55 +116,48 @@ class OcaService:
         return r
 
     def estadoUltimosEnvios(self, operativas, from_date, to_date):
-        return OcaService.iterateresult(
-            "GetEnviosUltimoEstadoResult",
-            self.client.GetEnviosUltimoEstado(
-                cuit=self.CUIT,
-                operativas=operativas,
-                fechaDesta=from_date.strftime("%d/%m/%Y"),
-                fechaHasta=to_date.strftime("%d/%m/%Y"),
-            ),
+        soap_response = self.client.GetEnviosUltimoEstado(
+            cuit=self.CUIT,
+            operativas=operativas,
+            fechaDesta=from_date.strftime("%d/%m/%Y"),
+            fechaHasta=to_date.strftime("%d/%m/%Y"),
         )
+        return self.iterateresult("GetEnviosUltimoEstadoResult", soap_response)
 
     def listEnvios(self, from_date, to_date):
-        return OcaService.iterateresult(
-            "List_EnviosResult",
-            self.client.List_Envios(
-                CUIT=self.CUIT,
-                FechaDesde=from_date.strftime("%d/%m/%Y"),
-                FechaHasta=to_date.strftime("%d/%m/%Y"),
-            ),
+        soap_response = self.client.List_Envios(
+            CUIT=self.CUIT,
+            FechaDesde=from_date.strftime("%d/%m/%Y"),
+            FechaHasta=to_date.strftime("%d/%m/%Y"),
         )
+        return self.iterateresult("List_EnviosResult", soap_response)
 
     def tarifarEnvioCorporativo(
         self, peso_total, volumen_total, cp_origen, cp_destino, n_paquetes, operativa
     ):
-        return OcaService.iterateresult(
-            "Tarifar_Envio_CorporativoResult",
-            self.client.Tarifar_Envio_Corporativo(
-                PesoTotal=peso_total,
-                VolumenTotal=volumen_total,
-                CodigoPostalOrigen=cp_origen,
-                CodigoPostalDestino=cp_destino,
-                CantidadPaquetes=n_paquetes,
-                Cuit=self.CUIT,
-                Operativa=operativa,
-            ),
+        soap_response = self.client.Tarifar_Envio_Corporativo(
+            PesoTotal=peso_total,
+            VolumenTotal=volumen_total,
+            CodigoPostalOrigen=cp_origen,
+            CodigoPostalDestino=cp_destino,
+            CantidadPaquetes=n_paquetes,
+            Cuit=self.CUIT,
+            Operativa=operativa,
         )
+        return self.iterateresult("Tarifar_Envio_CorporativoResult", soap_response)
 
     def trackingOR(self, orden_retiro):
-        return OcaService.iterateresult(
-            "Tracking_OrdenRetiroResult",
-            self.client.Tracking_OrdenRetiro(CUIT=self.CUIT, OrdenRetiro=orden_retiro),
+        soap_response = self.client.Tracking_OrdenRetiro(
+            CUIT=self.CUIT, OrdenRetiro=orden_retiro
         )
+        return self.iterateresult("Tracking_OrdenRetiroResult", soap_response)
 
     def trackingPiezaConID(self, pieza):
-        return OcaService.iterateresult(
-            "Tracking_PiezaResult", self.client.Tracking_Pieza(Pieza=pieza)
-        )
+        soap_response = self.client.Tracking_Pieza(Pieza=pieza)
+        return self.iterateresult("Tracking_PiezaResult", soap_response)
 
     def trackingPiezaConDNICUIT(self, nro_documento, cuit):
-        return OcaService.iterateresult(
-            "Tracking_PiezaResult",
-            self.client.Tracking_Pieza(NroDocumentoCliente=nro_documento, CUIT=cuit),
+        soap_response = self.client.Tracking_Pieza(
+            NroDocumentoCliente=nro_documento, CUIT=cuit
         )
+        return self.iterateresult("Tracking_PiezaResult", soap_response)
